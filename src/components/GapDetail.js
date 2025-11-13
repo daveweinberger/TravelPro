@@ -2,31 +2,22 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  Typography,
+  Heading,
+  Text,
   Button,
-  Card,
-  CardContent,
-  AppBar,
-  Toolbar,
+  VStack,
+  Flex,
   IconButton,
   Menu,
+  MenuButton,
+  MenuList,
   MenuItem,
-  Paper,
   Divider,
-  Alert
-} from '@mui/material';
-import {
-  ArrowBack as BackIcon,
-  AccountCircle,
-  Add as AddIcon,
-  Hotel as HotelIcon,
-  Restaurant as RestaurantIcon,
-  Backpack as LuggageIcon,
-  LocalBar as WineIcon,
-  Warning as WarningIcon
-} from '@mui/icons-material';
+  Alert,
+  AlertIcon,
+} from '@chakra-ui/react';
+import { ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import '../styles/GapDetail.css';
 
 const GapDetail = () => {
   const navigate = useNavigate();
@@ -97,175 +88,180 @@ const GapDetail = () => {
   ];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={2}>
-        <Toolbar>
+    <Box minH="100vh" bg="ios.secondaryBackground">
+      <Box
+        bg="white"
+        borderBottomWidth="1px"
+        borderColor="gray.200"
+        px={4}
+        py={3}
+        position="sticky"
+        top={0}
+        zIndex={10}
+        boxShadow="sm"
+      >
+        <Flex justify="space-between" align="center">
           <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
+            icon={<ArrowBackIcon />}
+            variant="ghost"
             onClick={() => navigate('/')}
-            sx={{ mr: 2 }}
-          >
-            <BackIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Gap Details
-          </Typography>
-          <IconButton
-            color="inherit"
-            onClick={(e) => setUserAnchorEl(e.currentTarget)}
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            anchorEl={userAnchorEl}
-            open={Boolean(userAnchorEl)}
-            onClose={() => setUserAnchorEl(null)}
-          >
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Profile</MenuItem>
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Settings</MenuItem>
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Sign out</MenuItem>
+            aria-label="Back"
+          />
+          <Heading size="md" fontWeight="600">Gap Details</Heading>
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<span>👤</span>}
+              variant="ghost"
+              aria-label="User menu"
+            />
+            <MenuList>
+              <MenuItem>Profile</MenuItem>
+              <MenuItem>Settings</MenuItem>
+              <MenuItem>Sign out</MenuItem>
+            </MenuList>
           </Menu>
-        </Toolbar>
-      </AppBar>
+        </Flex>
+      </Box>
 
-      <Container maxWidth="md" sx={{ mt: 3, mb: 3 }}>
-        <Typography variant="h5" sx={{ mb: 1 }}>
+      <Container maxW="container.md" py={6}>
+        <Heading size="lg" mb={2}>
           {gapInfo.date} • {gapInfo.location}
-        </Typography>
+        </Heading>
 
-        <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
+        <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="md">
+          <Heading size="md" mb={4}>
             TIMELINE
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
+          </Heading>
+          <Divider mb={6} />
 
-          <Box className="timeline">
-            <Box className="timeline-event">
-              <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
+          <VStack spacing={4} align="stretch">
+            <Box>
+              <Text fontWeight="600" mb={1}>
                 {gapInfo.startEvent.time} {gapInfo.startEvent.icon} {gapInfo.startEvent.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+              </Text>
+              <Text fontSize="sm" color="gray.600">
                 {gapInfo.startEvent.address}
-              </Typography>
+              </Text>
             </Box>
 
-            <Box className="timeline-gap">
-              <Box className="gap-line" />
-              <Alert severity="warning" sx={{ my: 2 }}>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            <Flex direction="column" align="center" py={2}>
+              <Box h="30px" w="2px" bgGradient="linear(to-b, orange.400, transparent)" />
+              <Alert status="warning" borderRadius="md" my={2}>
+                <AlertIcon />
+                <Text fontWeight="600">
                   ⚠️ {gapInfo.duration}
-                </Typography>
+                </Text>
               </Alert>
-              <Box className="gap-line" />
-            </Box>
+              <Box h="30px" w="2px" bgGradient="linear(to-b, transparent, orange.400)" />
+            </Flex>
 
-            <Box className="timeline-event">
-              <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
+            <Box>
+              <Text fontWeight="600" mb={1}>
                 {gapInfo.endEvent.time} {gapInfo.endEvent.icon} {gapInfo.endEvent.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
+              </Text>
+              <Text fontSize="sm" color="gray.600">
                 {gapInfo.endEvent.address}
-              </Typography>
+              </Text>
             </Box>
-          </Box>
-        </Paper>
+          </VStack>
+        </Box>
 
-        <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
+        <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="md">
+          <Heading size="md" mb={4}>
             💡 SMART SUGGESTIONS
-          </Typography>
-          <Divider sx={{ mb: 3 }} />
+          </Heading>
+          <Divider mb={6} />
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <VStack spacing={6} align="stretch">
             {suggestions.map((suggestion, idx) => (
               <Box key={suggestion.id}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+                <Text fontWeight="600" mb={3}>
                   Option {idx + 1}: {suggestion.title}
-                </Typography>
+                </Text>
                 {suggestion.items.map((item, itemIdx) => (
-                  <Card key={itemIdx} variant="outlined" sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                        <Box sx={{ fontSize: '2rem' }}>{item.icon}</Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                            {item.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                            {item.details}
-                          </Typography>
-                          {item.time && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                              {item.time}
-                            </Typography>
-                          )}
-                          {item.activities && (
-                            <Box sx={{ mb: 1 }}>
-                              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                                Then explore:
-                              </Typography>
-                              <Box component="ul" sx={{ pl: 3, m: 0 }}>
-                                {item.activities.map((activity, actIdx) => (
-                                  <Typography key={actIdx} component="li" variant="body2">
-                                    {activity}
-                                  </Typography>
-                                ))}
-                              </Box>
+                  <Box key={itemIdx} borderWidth="1px" borderRadius="md" p={4} mb={3}>
+                    <Flex align="flex-start" gap={4}>
+                      <Text fontSize="2xl">{item.icon}</Text>
+                      <Box flex="1">
+                        <Text fontWeight="600" mb={1}>
+                          {item.name}
+                        </Text>
+                        <Text fontSize="sm" color="gray.600" mb={2}>
+                          {item.details}
+                        </Text>
+                        {item.time && (
+                          <Text fontSize="sm" color="gray.600" mb={2}>
+                            {item.time}
+                          </Text>
+                        )}
+                        {item.activities && (
+                          <Box mb={3}>
+                            <Text fontSize="sm" mb={1}>
+                              Then explore:
+                            </Text>
+                            <Box as="ul" pl={6}>
+                              {item.activities.map((activity, actIdx) => (
+                                <Text key={actIdx} as="li" fontSize="sm">
+                                  {activity}
+                                </Text>
+                              ))}
                             </Box>
-                          )}
-                          <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                            {suggestion.id === 1 && (
-                              <Button variant="outlined" size="small" startIcon={<AddIcon />}>
-                                Add Activities
-                              </Button>
-                            )}
-                            {suggestion.id === 2 && (
-                              <>
-                                <Button variant="outlined" size="small">
-                                  Book Now
-                                </Button>
-                                <Button variant="text" size="small">
-                                  Learn More
-                                </Button>
-                              </>
-                            )}
-                            {suggestion.id === 3 && (
-                              <Button variant="outlined" size="small">
-                                Send Request
-                              </Button>
-                            )}
                           </Box>
-                        </Box>
+                        )}
+                        <Flex gap={2} flexWrap="wrap">
+                          {suggestion.id === 1 && (
+                            <Button size="sm" variant="outline" leftIcon={<AddIcon />}>
+                              Add Activities
+                            </Button>
+                          )}
+                          {suggestion.id === 2 && (
+                            <>
+                              <Button size="sm" variant="outline">
+                                Book Now
+                              </Button>
+                              <Button size="sm" variant="ghost">
+                                Learn More
+                              </Button>
+                            </>
+                          )}
+                          {suggestion.id === 3 && (
+                            <Button size="sm" variant="outline">
+                              Send Request
+                            </Button>
+                          )}
+                        </Flex>
                       </Box>
-                    </CardContent>
-                  </Card>
+                    </Flex>
+                  </Box>
                 ))}
               </Box>
             ))}
-          </Box>
+          </VStack>
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-            <Button variant="outlined">Dismiss This Gap</Button>
-            <Button variant="text">View More Ideas</Button>
-          </Box>
-        </Paper>
+          <Flex gap={2} mt={6}>
+            <Button variant="outline">Dismiss This Gap</Button>
+            <Button variant="link">View More Ideas</Button>
+          </Flex>
+        </Box>
 
-        <Alert severity="warning" icon={<WarningIcon />}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-            ⚠️ Other Gaps in Your Trip ({otherGaps.length})
-          </Typography>
-          <Box component="ul" sx={{ pl: 2, m: 0 }}>
-            {otherGaps.map((gap, idx) => (
-              <Typography key={idx} component="li" variant="body2">
-                {gap.date}: {gap.description}
-              </Typography>
-            ))}
+        <Alert status="warning" borderRadius="md">
+          <AlertIcon />
+          <Box flex="1">
+            <Text fontWeight="600" mb={2}>
+              ⚠️ Other Gaps in Your Trip ({otherGaps.length})
+            </Text>
+            <Box as="ul" pl={4}>
+              {otherGaps.map((gap, idx) => (
+                <Text key={idx} as="li" fontSize="sm">
+                  {gap.date}: {gap.description}
+                </Text>
+              ))}
+            </Box>
+            <Button variant="link" size="sm" mt={2}>
+              Review All Gaps
+            </Button>
           </Box>
-          <Button variant="text" size="small" sx={{ mt: 1 }}>
-            Review All Gaps
-          </Button>
         </Alert>
       </Container>
     </Box>

@@ -2,37 +2,29 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  Typography,
+  Heading,
+  Text,
   Button,
-  Card,
-  CardContent,
-  Chip,
-  AppBar,
-  Toolbar,
+  Flex,
+  VStack,
+  Tag,
+  TagLabel,
   IconButton,
   Badge,
   Menu,
+  MenuButton,
+  MenuList,
   MenuItem,
-  Divider
-} from '@mui/material';
+  Divider,
+} from '@chakra-ui/react';
 import {
-  Menu as MenuIcon,
-  Notifications as NotificationsIcon,
-  Search as SearchIcon,
-  AccountCircle,
-  Add as AddIcon,
-  Edit as EditIcon,
-  MoreVert as MoreIcon,
-  PushPin as PinIcon,
-  Flight as FlightIcon,
-  Hotel as HotelIcon,
-  Warning as WarningIcon,
-  CheckCircle as CheckIcon,
-  Home as HomeIcon,
-  Lightbulb as LightbulbIcon
-} from '@mui/icons-material';
+  HamburgerIcon,
+  BellIcon,
+  SearchIcon,
+  AddIcon,
+  EditIcon,
+} from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import '../styles/TripsOverview.css';
 
 const TripsOverview = () => {
   const navigate = useNavigate();
@@ -92,181 +84,162 @@ const TripsOverview = () => {
     { flag: '🇪🇸', name: 'Spain 2023' }
   ];
 
-  const getStatusChip = (status) => {
+  const getStatusTag = (status) => {
     switch (status) {
       case 'active':
-        return <Chip icon={<PinIcon />} label="Active" color="primary" size="small" />;
+        return <Tag size="sm" colorScheme="blue">📌 Active</Tag>;
       case 'draft':
-        return <Chip label="Draft" variant="outlined" size="small" />;
+        return <Tag size="sm" variant="outline">Draft</Tag>;
       default:
         return null;
     }
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={2}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={() => setMenuAnchorEl(null)}
-          >
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/'); }}>
-              <HomeIcon sx={{ mr: 1 }} /> Home
-            </MenuItem>
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/trips'); }}>
-              <FlightIcon sx={{ mr: 1 }} /> My Trips
-            </MenuItem>
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/recommendations'); }}>
-              <LightbulbIcon sx={{ mr: 1 }} /> Recommendations
-            </MenuItem>
+    <Box minH="100vh" bg="ios.secondaryBackground">
+      <Box
+        bg="white"
+        borderBottomWidth="1px"
+        borderColor="gray.200"
+        px={4}
+        py={3}
+        position="sticky"
+        top={0}
+        zIndex={10}
+        boxShadow="sm"
+      >
+        <Flex justify="space-between" align="center">
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<HamburgerIcon />}
+              variant="ghost"
+              aria-label="Menu"
+            />
+            <MenuList>
+              <MenuItem onClick={() => navigate('/')}>🏠 Home</MenuItem>
+              <MenuItem onClick={() => navigate('/trips')}>✈️ My Trips</MenuItem>
+              <MenuItem onClick={() => navigate('/recommendations')}>💡 Recommendations</MenuItem>
+            </MenuList>
           </Menu>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            TravelPro
-          </Typography>
-          <IconButton color="inherit">
-            <SearchIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            onClick={(e) => setUserAnchorEl(e.currentTarget)}
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            anchorEl={userAnchorEl}
-            open={Boolean(userAnchorEl)}
-            onClose={() => setUserAnchorEl(null)}
-          >
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Profile</MenuItem>
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Settings</MenuItem>
-            <MenuItem onClick={() => setUserAnchorEl(null)}>Sign out</MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4">My Trips</Typography>
-          <Button variant="contained" startIcon={<AddIcon />}>
+          <Heading size="md" fontWeight="600">TravelPro</Heading>
+
+          <Flex gap={2}>
+            <IconButton icon={<SearchIcon />} variant="ghost" aria-label="Search" />
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                icon={<span>👤</span>}
+                variant="ghost"
+                aria-label="User menu"
+              />
+              <MenuList>
+                <MenuItem>Profile</MenuItem>
+                <MenuItem>Settings</MenuItem>
+                <MenuItem>Sign out</MenuItem>
+              </MenuList>
+            </Menu>
+          </Flex>
+        </Flex>
+      </Box>
+
+      <Container maxW="container.xl" py={6}>
+        <Flex justify="space-between" align="center" mb={6}>
+          <Heading size="lg">My Trips</Heading>
+          <Button leftIcon={<AddIcon />} colorScheme="brand">
             New Trip
           </Button>
-        </Box>
+        </Flex>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
+        <VStack spacing={4} align="stretch" mb={8}>
           {activeTrips.map((trip) => (
-            <Card key={trip.id} elevation={2}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="h5">{trip.flag}</Typography>
-                    <Typography variant="h6">{trip.name}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {getStatusChip(trip.status)}
-                  </Box>
-                </Box>
+            <Box key={trip.id} bg="white" borderRadius="lg" p={6} boxShadow="md">
+              <Flex justify="space-between" align="flex-start" mb={4}>
+                <Flex align="center" gap={2}>
+                  <Text fontSize="2xl">{trip.flag}</Text>
+                  <Heading size="md">{trip.name}</Heading>
+                </Flex>
+                {getStatusTag(trip.status)}
+              </Flex>
 
-                <Divider sx={{ mb: 2 }} />
+              <Divider mb={4} />
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  {trip.dates} • {trip.duration}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {trip.route}
-                </Typography>
+              <Text fontSize="sm" color="gray.600" mb={2}>
+                {trip.dates} • {trip.duration}
+              </Text>
+              <Text mb={4}>
+                {trip.route}
+              </Text>
 
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+              <Flex gap={2} flexWrap="wrap" mb={4}>
                   {trip.stats.gaps !== undefined && (
-                    <Chip
-                      icon={<WarningIcon />}
-                      label={`${trip.stats.gaps} gaps detected`}
-                      color="warning"
-                      size="small"
-                    />
+                    <Tag size="sm" colorScheme="orange">
+                      ⚠️ {trip.stats.gaps} gaps detected
+                    </Tag>
                   )}
                   {trip.stats.complete && (
-                    <Chip
-                      icon={<CheckIcon />}
-                      label="Planning complete"
-                      color="success"
-                      size="small"
-                    />
+                    <Tag size="sm" colorScheme="green">
+                      ✓ Planning complete
+                    </Tag>
                   )}
                   {trip.stats.flights !== undefined && (
-                    <Chip
-                      icon={<FlightIcon />}
-                      label={`${trip.stats.flights} flights`}
-                      variant="outlined"
-                      size="small"
-                    />
+                    <Tag size="sm" variant="outline">
+                      ✈️ {trip.stats.flights} flights
+                    </Tag>
                   )}
                   {trip.stats.hotels !== undefined && (
-                    <Chip
-                      icon={<HotelIcon />}
-                      label={`${trip.stats.hotels} hotels`}
-                      variant="outlined"
-                      size="small"
-                    />
+                    <Tag size="sm" variant="outline">
+                      🏨 {trip.stats.hotels} hotels
+                    </Tag>
                   )}
                   {trip.stats.flightsBooked !== undefined && (
-                    <Chip
-                      icon={<WarningIcon />}
-                      label={`${trip.stats.flightsBooked} of ${trip.stats.flightsTotal} flights booked`}
-                      color="warning"
-                      size="small"
-                    />
+                    <Tag size="sm" colorScheme="orange">
+                      ⚠️ {trip.stats.flightsBooked} of {trip.stats.flightsTotal} flights booked
+                    </Tag>
                   )}
-                </Box>
+                </Flex>
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Text fontSize="sm" color="gray.600" mb={4}>
                   {trip.next}
-                </Typography>
+                </Text>
 
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button variant="contained" onClick={() => navigate('/')}>
+                <Flex gap={2}>
+                  <Button colorScheme="brand" onClick={() => navigate('/')}>
                     View Trip
                   </Button>
-                  <Button variant="outlined" startIcon={<EditIcon />}>
+                  <Button variant="outline" leftIcon={<EditIcon />}>
                     Edit
                   </Button>
-                  <IconButton size="small">
-                    <MoreIcon />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
+                  <IconButton
+                    icon={<span>⋮</span>}
+                    variant="ghost"
+                    aria-label="More options"
+                  />
+                </Flex>
+            </Box>
           ))}
-        </Box>
+        </VStack>
 
-        <Divider sx={{ my: 3 }} />
+        <Divider my={6} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6">Past Trips ({pastTrips.length})</Typography>
-          <Button variant="text">View All</Button>
-        </Box>
+        <Flex justify="space-between" align="center" mb={4}>
+          <Heading size="md">Past Trips ({pastTrips.length})</Heading>
+          <Button variant="link">View All</Button>
+        </Flex>
 
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Flex gap={2} flexWrap="wrap">
           {pastTrips.map((trip, idx) => (
-            <Chip
+            <Tag
               key={idx}
-              label={`${trip.flag} ${trip.name}`}
-              onClick={() => {}}
-              sx={{ fontSize: '1rem', py: 2 }}
-            />
+              size="lg"
+              cursor="pointer"
+              _hover={{ bg: 'gray.100' }}
+            >
+              <TagLabel>{trip.flag} {trip.name}</TagLabel>
+            </Tag>
           ))}
-        </Box>
+        </Flex>
       </Container>
     </Box>
   );

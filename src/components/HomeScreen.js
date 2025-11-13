@@ -1,54 +1,51 @@
 import React, { useState } from 'react';
 import {
-  AppBar,
-  Toolbar,
-  Typography,
+  Box,
+  Container,
+  Flex,
+  Heading,
+  Button,
   IconButton,
   Badge,
-  Button,
-  Chip,
-  Container,
-  Box,
-  Paper,
-  Tabs,
-  Tab,
-  Menu,
-  MenuItem,
+  Tag,
+  TagLabel,
   Select,
-  FormControl,
-  InputLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
-} from '@mui/material';
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from '@chakra-ui/react';
 import {
-  Menu as MenuIcon,
-  Notifications as NotificationsIcon,
-  Search as SearchIcon,
-  AccountCircle,
-  Add as AddIcon,
-  LocalOffer as TagIcon,
-  FileUpload as UploadIcon,
-  Lightbulb as LightbulbIcon,
-  Home as HomeIcon
-} from '@mui/icons-material';
+  HamburgerIcon,
+  BellIcon,
+  SearchIcon,
+  AddIcon,
+} from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import Calendar from './Calendar';
 import TripDetails from './TripDetails';
 import ListView from './ListView';
 import ImportPlans from './ImportPlans';
 import AlertsView from './AlertsView';
-import '../styles/HomeScreen.css';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 15));
   const [selectedTrip, setSelectedTrip] = useState('all');
   const [activeTab, setActiveTab] = useState(0);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [showImportDialog, setShowImportDialog] = useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
   const trips = [
     {
@@ -143,186 +140,175 @@ const HomeScreen = () => {
 
   const tags = ['Europe', 'Asia', 'Work'];
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" elevation={2}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={() => setMenuAnchorEl(null)}
-          >
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/'); }}>
-              <HomeIcon sx={{ mr: 1 }} /> Home
-            </MenuItem>
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/trips'); }}>
-              <AddIcon sx={{ mr: 1 }} /> My Trips
-            </MenuItem>
-            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/recommendations'); }}>
-              <LightbulbIcon sx={{ mr: 1 }} /> Recommendations
-            </MenuItem>
+    <Box minH="100vh" bg="ios.secondaryBackground">
+      {/* iOS-style Navigation Bar */}
+      <Box
+        bg="white"
+        borderBottomWidth="1px"
+        borderColor="gray.200"
+        px={4}
+        py={3}
+        position="sticky"
+        top={0}
+        zIndex={10}
+        boxShadow="sm"
+      >
+        <Flex justify="space-between" align="center">
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<HamburgerIcon />}
+              variant="ghost"
+              aria-label="Menu"
+            />
+            <MenuList>
+              <MenuItem onClick={() => navigate('/')}>🏠 Home</MenuItem>
+              <MenuItem onClick={() => navigate('/trips')}>✈️ My Trips</MenuItem>
+              <MenuItem onClick={() => navigate('/recommendations')}>💡 Recommendations</MenuItem>
+            </MenuList>
           </Menu>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            TravelPro
-          </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={3} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit">
-            <SearchIcon />
-          </IconButton>
-          <IconButton
-            color="inherit"
-            onClick={handleMenuOpen}
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Sign out</MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
 
-      <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-        <Paper elevation={1} sx={{ p: 3 }}>
-          <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-              <Typography variant="h4" component="h1">
-                All Trips
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Button variant="outlined" startIcon={<TagIcon />}>
-                  Manage Tags
-                </Button>
-                <Button 
-                  variant="contained" 
-                  startIcon={<AddIcon />}
-                  onClick={() => setShowImportDialog(!showImportDialog)}
-                >
-                  Add Plans
-                </Button>
-              </Box>
-            </Box>
+          <Heading size="md" fontWeight="600">TravelPro</Heading>
 
-            <Box sx={{ mb: 2 }}>
-              <FormControl size="small" sx={{ minWidth: 200, mb: 1 }}>
-                <InputLabel>Trip</InputLabel>
-                <Select
-                  value={selectedTrip}
-                  label="Trip"
-                  onChange={(e) => setSelectedTrip(e.target.value)}
-                >
-                  <MenuItem value="all">All Trips</MenuItem>
-                  <MenuItem value="europe-2025">Europe Summer 2025</MenuItem>
-                  <MenuItem value="asia-2025">Southeast Asia</MenuItem>
-                </Select>
-              </FormControl>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-                {tags.map(tag => (
-                  <Chip key={tag} label={`🏷️ ${tag}`} color="primary" variant="outlined" />
-                ))}
-              </Box>
-            </Box>
+          <Flex gap={2}>
+            <IconButton
+              icon={<BellIcon />}
+              variant="ghost"
+              aria-label="Notifications"
+              position="relative"
+            >
+              <Badge
+                colorScheme="red"
+                position="absolute"
+                top="0"
+                right="0"
+                fontSize="xs"
+              >
+                3
+              </Badge>
+            </IconButton>
+            <IconButton
+              icon={<SearchIcon />}
+              variant="ghost"
+              aria-label="Search"
+            />
+          </Flex>
+        </Flex>
+      </Box>
+
+      <Container maxW="container.xl" py={6}>
+        <Box bg="white" borderRadius="lg" p={6} boxShadow="base">
+          {/* Header */}
+          <Flex justify="space-between" align="center" mb={6}>
+            <Heading size="lg">All Trips</Heading>
+            <Flex gap={2}>
+              <Button leftIcon={<span>🏷️</span>} variant="outline" size="sm">
+                Manage Tags
+              </Button>
+              <Button
+                leftIcon={<AddIcon />}
+                colorScheme="brand"
+                size="sm"
+                onClick={onOpen}
+              >
+                Add Plans
+              </Button>
+            </Flex>
+          </Flex>
+
+          {/* Filters */}
+          <Box mb={4}>
+            <Select
+              value={selectedTrip}
+              onChange={(e) => setSelectedTrip(e.target.value)}
+              maxW="250px"
+              mb={3}
+              size="sm"
+            >
+              <option value="all">All Trips</option>
+              <option value="europe-2025">🇫🇷 Europe Summer 2025</option>
+              <option value="asia-2025">🇹🇭 Southeast Asia</option>
+            </Select>
+            <Flex gap={2} flexWrap="wrap">
+              {tags.map(tag => (
+                <Tag key={tag} size="md" colorScheme="blue" borderRadius="full">
+                  <TagLabel>🏷️ {tag}</TagLabel>
+                </Tag>
+              ))}
+            </Flex>
           </Box>
 
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-            <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-              <Tab label="📅 Calendar" />
-              <Tab label="📋 List View" />
-              <Tab label={<Badge badgeContent={3} color="error">🔔 Alerts</Badge>} />
-            </Tabs>
-          </Box>
+          {/* Tabs */}
+          <Tabs index={activeTab} onChange={setActiveTab} colorScheme="brand">
+            <TabList>
+              <Tab>📅 Calendar</Tab>
+              <Tab>📋 List View</Tab>
+              <Tab>
+                <Flex align="center" gap={2}>
+                  🔔 Alerts
+                  <Badge colorScheme="red" borderRadius="full">3</Badge>
+                </Flex>
+              </Tab>
+            </TabList>
 
-          <Box role="tabpanel" hidden={activeTab !== 0}>
-            {activeTab === 0 && (
-              <Box sx={{ mt: 2 }}>
-                <Calendar 
-                  trips={trips}
-                  selectedDate={selectedDate}
-                  onDateSelect={setSelectedDate}
-                />
-                <Box sx={{ mt: 3 }}>
-                  <TripDetails 
+            <TabPanels>
+              <TabPanel px={0}>
+                <Box mt={4}>
+                  <Calendar
                     trips={trips}
                     selectedDate={selectedDate}
+                    onDateSelect={setSelectedDate}
                   />
+                  <Box mt={6}>
+                    <TripDetails
+                      trips={trips}
+                      selectedDate={selectedDate}
+                    />
+                  </Box>
                 </Box>
-              </Box>
-            )}
-          </Box>
+              </TabPanel>
 
-          <Box role="tabpanel" hidden={activeTab !== 1}>
-            {activeTab === 1 && (
-              <Box sx={{ mt: 2 }}>
-                <ListView trips={trips} />
-              </Box>
-            )}
-          </Box>
+              <TabPanel px={0}>
+                <Box mt={4}>
+                  <ListView trips={trips} />
+                </Box>
+              </TabPanel>
 
-          <Box role="tabpanel" hidden={activeTab !== 2}>
-            {activeTab === 2 && (
-              <Box sx={{ mt: 2 }}>
-                <AlertsView />
-              </Box>
-            )}
-          </Box>
+              <TabPanel px={0}>
+                <Box mt={4}>
+                  <AlertsView />
+                </Box>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
 
-          <Dialog 
-            open={showImportDialog} 
-            onClose={() => setShowImportDialog(false)}
-            maxWidth="md"
-            fullWidth
-          >
-            <DialogTitle>Import Travel Plans</DialogTitle>
-            <DialogContent>
-              <Box sx={{ pt: 1 }}>
-                <ImportPlans trips={trips} onClose={() => setShowImportDialog(false)} />
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowImportDialog(false)}>Close</Button>
-            </DialogActions>
-          </Dialog>
-
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 3, pt: 3, borderTop: 1, borderColor: 'divider' }}>
-            <Button variant="outlined" startIcon={<AddIcon />}>
+          {/* Action Buttons */}
+          <Flex gap={2} mt={6} pt={6} borderTopWidth="1px">
+            <Button leftIcon={<AddIcon />} variant="outline" size="sm">
               Add Event
             </Button>
-            <Button variant="outlined" startIcon={<UploadIcon />}>
+            <Button leftIcon={<span>📤</span>} variant="outline" size="sm">
               Export
             </Button>
-            <Button variant="outlined" startIcon={<LightbulbIcon />}>
+            <Button leftIcon={<span>💡</span>} variant="outline" size="sm">
               Suggestions
             </Button>
-          </Box>
-        </Paper>
+          </Flex>
+        </Box>
       </Container>
+
+      {/* Import Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay />
+        <ModalContent borderRadius="lg">
+          <ModalHeader>Import Travel Plans</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <ImportPlans trips={trips} onClose={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

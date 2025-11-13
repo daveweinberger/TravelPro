@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Paper,
-  Typography,
+  Heading,
+  Text,
   Button,
-  Chip,
-  Card,
-  CardContent,
+  Tag,
+  TagLabel,
+  VStack,
+  Flex,
   Tabs,
+  TabList,
+  TabPanels,
   Tab,
+  TabPanel,
   Alert,
-  Divider
-} from '@mui/material';
-import '../styles/AlertsView.css';
+  AlertIcon,
+  Divider,
+  Badge,
+} from '@chakra-ui/react';
 
 const AlertsView = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -71,168 +76,192 @@ const AlertsView = () => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'error';
-      case 'medium': return 'warning';
-      case 'low': return 'info';
-      default: return 'default';
+      case 'high': return 'red';
+      case 'medium': return 'orange';
+      case 'low': return 'blue';
+      default: return 'gray';
     }
   };
 
   return (
     <Box>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
-          <Tab label={<Chip label="⚠️ Gaps (3)" size="small" />} />
-          <Tab label={<Chip label="📅 Upcoming (5)" size="small" />} />
-          <Tab label={<Chip label="✓ Resolved (12)" size="small" color="success" />} />
-        </Tabs>
-      </Box>
+      <Tabs index={activeTab} onChange={setActiveTab} colorScheme="brand">
+        <TabList mb={4}>
+          <Tab>
+            <Badge colorScheme="red" mr={2}>3</Badge>
+            ⚠️ Gaps
+          </Tab>
+          <Tab>
+            <Badge colorScheme="blue" mr={2}>5</Badge>
+            📅 Upcoming
+          </Tab>
+          <Tab>
+            <Badge colorScheme="green" mr={2}>12</Badge>
+            ✓ Resolved
+          </Tab>
+        </TabList>
 
-      {activeTab === 0 && (
-        <Box>
-          <Paper elevation={2} sx={{ mb: 3 }}>
-            <Box sx={{ bgcolor: 'warning.light', p: 2 }}>
-              <Typography variant="h6">⚠️ GAP ALERTS</Typography>
-            </Box>
-            <CardContent>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {gapAlerts.map((alert, idx) => (
-                  <Card key={idx} variant="outlined" sx={{ borderLeft: 4, borderLeftColor: `${getPriorityColor(alert.priority)}.main` }}>
-                    <CardContent>
-                      <Chip 
-                        label={`⚠️ ${alert.priority.toUpperCase()} PRIORITY`} 
-                        color={getPriorityColor(alert.priority)}
-                        size="small"
-                        sx={{ mb: 1 }}
-                      />
-                      <Typography variant="h6" sx={{ mb: 1 }}>
-                        {alert.title}
-                      </Typography>
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {alert.trip.flag} {alert.trip.name}
-                        </Typography>
-                        {alert.trip.tags.map(tag => (
-                          <Chip key={tag} label={`🏷️ ${tag}`} size="small" />
-                        ))}
+        <TabPanels>
+          <TabPanel px={0}>
+            <VStack spacing={6} align="stretch">
+              {/* Gap Alerts Section */}
+              <Box bg="white" borderRadius="lg" overflow="hidden" boxShadow="md">
+                <Box bg="orange.100" p={4}>
+                  <Heading size="md" color="orange.800">⚠️ GAP ALERTS</Heading>
+                </Box>
+                <Box p={4}>
+                  <VStack spacing={4} align="stretch">
+                    {gapAlerts.map((alert, idx) => (
+                      <Box
+                        key={idx}
+                        borderWidth="1px"
+                        borderLeftWidth="4px"
+                        borderLeftColor={`${getPriorityColor(alert.priority)}.500`}
+                        borderRadius="md"
+                        p={4}
+                      >
+                        <Tag
+                          size="sm"
+                          colorScheme={getPriorityColor(alert.priority)}
+                          mb={2}
+                        >
+                          ⚠️ {alert.priority.toUpperCase()} PRIORITY
+                        </Tag>
+                        
+                        <Heading size="sm" mb={2}>
+                          {alert.title}
+                        </Heading>
+                        
+                        <Flex align="center" gap={2} mb={2} flexWrap="wrap">
+                          <Text fontSize="sm" fontWeight="600">
+                            {alert.trip.flag} {alert.trip.name}
+                          </Text>
+                          {alert.trip.tags.map(tag => (
+                            <Tag key={tag} size="sm" colorScheme="blue" borderRadius="full">
+                              <TagLabel>🏷️ {tag}</TagLabel>
+                            </Tag>
+                          ))}
+                        </Flex>
+
+                        <Text fontSize="sm" color="gray.600" mb={2}>
+                          {alert.date} • {alert.time}
+                        </Text>
+
+                        <Text fontSize="sm" fontWeight="600" mb={1}>
+                          Between:
+                        </Text>
+                        <Box as="ul" pl={6} mb={2}>
+                          {alert.between.map((item, i) => (
+                            <Text key={i} as="li" fontSize="sm">
+                              {item}
+                            </Text>
+                          ))}
+                        </Box>
+
+                        {alert.suggestions && (
+                          <Text fontSize="sm" mb={3}>
+                            Suggestions ready ({alert.suggestions})
+                          </Text>
+                        )}
+                        {alert.recommendations && (
+                          <Text fontSize="sm" mb={3}>
+                            Recommendations: {alert.recommendations}
+                          </Text>
+                        )}
+
+                        <Flex gap={2} flexWrap="wrap">
+                          <Button size="sm" colorScheme="brand">
+                            View Suggestions
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            Dismiss
+                          </Button>
+                          <Button size="sm" variant="ghost">
+                            Snooze
+                          </Button>
+                        </Flex>
                       </Box>
-
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {alert.date} • {alert.time}
-                      </Typography>
-
-                      <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 600 }}>
-                        Between:
-                      </Typography>
-                      <Box component="ul" sx={{ pl: 3, mb: 1 }}>
-                        {alert.between.map((item, i) => (
-                          <Typography key={i} component="li" variant="body2">
-                            {item}
-                          </Typography>
-                        ))}
-                      </Box>
-
-                      {alert.suggestions && (
-                        <Typography variant="body2" sx={{ mb: 2 }}>
-                          Suggestions ready ({alert.suggestions})
-                        </Typography>
-                      )}
-                      {alert.recommendations && (
-                        <Typography variant="body2" sx={{ mb: 2 }}>
-                          Recommendations: {alert.recommendations}
-                        </Typography>
-                      )}
-
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        <Button variant="contained" size="small">
-                          View Suggestions
-                        </Button>
-                        <Button variant="outlined" size="small">
-                          Dismiss
-                        </Button>
-                        <Button variant="text" size="small">
-                          Snooze
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
+                    ))}
+                  </VStack>
+                </Box>
               </Box>
-            </CardContent>
-          </Paper>
 
-          <Paper elevation={2} sx={{ mb: 3 }}>
-            <Box sx={{ bgcolor: 'info.light', p: 2 }}>
-              <Typography variant="h6">📅 UPCOMING REMINDERS</Typography>
-            </Box>
-            <CardContent>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {upcomingReminders.map((reminder, idx) => (
-                  <Card key={idx} variant="outlined">
-                    <CardContent>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                        📱 {reminder.timing}
-                      </Typography>
-                      <Typography variant="body1" sx={{ mb: 0.5, fontWeight: 600 }}>
-                        {reminder.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        {reminder.trip}
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button variant="outlined" size="small">
-                          ✓ Mark Complete
-                        </Button>
-                        <Button variant="text" size="small">
-                          Snooze
-                        </Button>
+              {/* Upcoming Reminders Section */}
+              <Box bg="white" borderRadius="lg" overflow="hidden" boxShadow="md">
+                <Box bg="blue.100" p={4}>
+                  <Heading size="md" color="blue.800">📅 UPCOMING REMINDERS</Heading>
+                </Box>
+                <Box p={4}>
+                  <VStack spacing={4} align="stretch">
+                    {upcomingReminders.map((reminder, idx) => (
+                      <Box key={idx} borderWidth="1px" borderRadius="md" p={4}>
+                        <Text fontSize="sm" color="gray.600" mb={1}>
+                          📱 {reminder.timing}
+                        </Text>
+                        <Text fontWeight="600" mb={1}>
+                          {reminder.title}
+                        </Text>
+                        <Text fontSize="sm" color="gray.600" mb={3}>
+                          {reminder.trip}
+                        </Text>
+                        <Flex gap={2}>
+                          <Button size="sm" variant="outline">
+                            ✓ Mark Complete
+                          </Button>
+                          <Button size="sm" variant="ghost">
+                            Snooze
+                          </Button>
+                        </Flex>
                       </Box>
-                    </CardContent>
-                  </Card>
-                ))}
-                <Button variant="text" size="small">
-                  View All (3 more)
-                </Button>
+                    ))}
+                    <Button variant="link" size="sm">
+                      View All (3 more)
+                    </Button>
+                  </VStack>
+                </Box>
               </Box>
-            </CardContent>
-          </Paper>
 
-          <Alert severity="info" icon="💡">
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-              SMART INSIGHTS
-            </Typography>
-            <Box component="ul" sx={{ pl: 2, m: 0 }}>
-              <Typography component="li" variant="body2">
-                3 gaps could be filled with museum visits
-              </Typography>
-              <Typography component="li" variant="body2">
-                Consider Paris Museum Pass (saves €45)
-              </Typography>
-              <Typography component="li" variant="body2">
-                Weather forecast: Rain expected Jun 17-18
-              </Typography>
+              {/* Smart Insights */}
+              <Alert status="info" borderRadius="md">
+                <AlertIcon />
+                <Box flex="1">
+                  <Text fontWeight="600" mb={2}>
+                    💡 SMART INSIGHTS
+                  </Text>
+                  <Box as="ul" pl={4}>
+                    <Text as="li" fontSize="sm">
+                      3 gaps could be filled with museum visits
+                    </Text>
+                    <Text as="li" fontSize="sm">
+                      Consider Paris Museum Pass (saves €45)
+                    </Text>
+                    <Text as="li" fontSize="sm">
+                      Weather forecast: Rain expected Jun 17-18
+                    </Text>
+                  </Box>
+                </Box>
+              </Alert>
+
+              <Flex gap={2}>
+                <Button variant="outline">Mark All as Read</Button>
+                <Button variant="outline">Settings</Button>
+              </Flex>
+            </VStack>
+          </TabPanel>
+
+          <TabPanel px={0}>
+            <Box textAlign="center" py={8}>
+              <Text color="gray.600">Upcoming reminders view</Text>
             </Box>
-          </Alert>
+          </TabPanel>
 
-          <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-            <Button variant="outlined">Mark All as Read</Button>
-            <Button variant="outlined">Settings</Button>
-          </Box>
-        </Box>
-      )}
-
-      {activeTab === 1 && (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography color="text.secondary">Upcoming reminders view</Typography>
-        </Box>
-      )}
-
-      {activeTab === 2 && (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography color="text.secondary">Resolved alerts view</Typography>
-        </Box>
-      )}
+          <TabPanel px={0}>
+            <Box textAlign="center" py={8}>
+              <Text color="gray.600">Resolved alerts view</Text>
+            </Box>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };

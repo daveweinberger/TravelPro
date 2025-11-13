@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
+    "@chakra-ui/react": "^2.10.9",
     "@cloudscape-design/components": "^3.0.1128",
     "@cloudscape-design/global-styles": "^1.0.47",
     "@emotion/react": "^11.14.0",
@@ -20,6 +22,7 @@
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "date-fns": "^4.1.0",
+    "framer-motion": "^11.18.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6"

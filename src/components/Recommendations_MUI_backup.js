@@ -2,37 +2,42 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  Heading,
-  Text,
+  Typography,
   Button,
-  VStack,
-  Flex,
-  Tag,
-  TagLabel,
+  Card,
+  CardContent,
+  Chip,
   Tabs,
-  TabList,
-  TabPanels,
   Tab,
-  TabPanel,
+  FormControl,
+  InputLabel,
   Select,
+  MenuItem,
+  Rating,
   Divider,
   Alert,
-  AlertIcon,
+  Paper,
+  AppBar,
+  Toolbar,
   IconButton,
   Badge,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from '@chakra-ui/react';
+  Menu
+} from '@mui/material';
 import {
-  AddIcon,
-  InfoIcon,
-  HamburgerIcon,
-  BellIcon,
-  SearchIcon,
-} from '@chakra-ui/icons';
+  Add as AddIcon,
+  Info as InfoIcon,
+  Map as MapIcon,
+  Warning as WarningIcon,
+  CheckCircle as CheckIcon,
+  Lightbulb as TipIcon,
+  Menu as MenuIcon,
+  Notifications as NotificationsIcon,
+  Search as SearchIcon,
+  AccountCircle,
+  Home as HomeIcon
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Recommendations.css';
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -149,61 +154,65 @@ const Recommendations = () => {
   };
 
   return (
-    <Box minH="100vh" bg="ios.secondaryBackground">
-      <Box
-        bg="white"
-        borderBottomWidth="1px"
-        borderColor="gray.200"
-        px={4}
-        py={3}
-        position="sticky"
-        top={0}
-        zIndex={10}
-        boxShadow="sm"
-      >
-        <Flex justify="space-between" align="center">
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              icon={<HamburgerIcon />}
-              variant="ghost"
-              aria-label="Menu"
-            />
-            <MenuList>
-              <MenuItem onClick={() => navigate('/')}>🏠 Home</MenuItem>
-              <MenuItem onClick={() => navigate('/trips')}>✈️ My Trips</MenuItem>
-              <MenuItem onClick={() => navigate('/recommendations')}>💡 Recommendations</MenuItem>
-            </MenuList>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" elevation={2}>
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={() => setMenuAnchorEl(null)}
+          >
+            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/'); }}>
+              <HomeIcon sx={{ mr: 1 }} /> Home
+            </MenuItem>
+            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/trips'); }}>
+              <AddIcon sx={{ mr: 1 }} /> My Trips
+            </MenuItem>
+            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/recommendations'); }}>
+              <TipIcon sx={{ mr: 1 }} /> Recommendations
+            </MenuItem>
           </Menu>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            TravelPro
+          </Typography>
+          <IconButton color="inherit">
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          <IconButton color="inherit">
+            <SearchIcon />
+          </IconButton>
+          <IconButton
+            color="inherit"
+            onClick={(e) => setUserAnchorEl(e.currentTarget)}
+          >
+            <AccountCircle />
+          </IconButton>
+          <Menu
+            anchorEl={userAnchorEl}
+            open={Boolean(userAnchorEl)}
+            onClose={() => setUserAnchorEl(null)}
+          >
+            <MenuItem onClick={() => setUserAnchorEl(null)}>Profile</MenuItem>
+            <MenuItem onClick={() => setUserAnchorEl(null)}>Settings</MenuItem>
+            <MenuItem onClick={() => setUserAnchorEl(null)}>Sign out</MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
 
-          <Heading size="md" fontWeight="600">TravelPro</Heading>
-
-          <Flex gap={2}>
-            <IconButton icon={<BellIcon />} variant="ghost" aria-label="Notifications">
-              <Badge colorScheme="red" position="absolute" top="0" right="0" fontSize="xs">
-                3
-              </Badge>
-            </IconButton>
-            <IconButton icon={<SearchIcon />} variant="ghost" aria-label="Search" />
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<span>👤</span>}
-                variant="ghost"
-                aria-label="User menu"
-              />
-              <MenuList>
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem>Sign out</MenuItem>
-              </MenuList>
-            </Menu>
-          </Flex>
-        </Flex>
-      </Box>
-
-      <Container maxW="container.xl" py={6}>
-        <Box bg="white" borderRadius="lg" p={6} boxShadow="base">
+      <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
+        <Paper elevation={1} sx={{ p: 3 }}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="h4" sx={{ mb: 2 }}>
             Recommendations

@@ -2,24 +2,19 @@ import React, { useState } from 'react';
 import { format, isSameDay } from 'date-fns';
 import {
   Box,
-  Paper,
-  Typography,
-  Chip,
+  Heading,
+  Text,
   Button,
   Alert,
-  Divider,
-  FormControl,
-  InputLabel,
+  AlertIcon,
+  Flex,
+  VStack,
+  Tag,
+  TagLabel,
   Select,
-  MenuItem,
-  Card,
-  CardContent
-} from '@mui/material';
-import {
-  Add as AddIcon,
-  AttachFile as AttachFileIcon
-} from '@mui/icons-material';
-import '../styles/ListView.css';
+  Divider,
+} from '@chakra-ui/react';
+import { AddIcon, AttachmentIcon } from '@chakra-ui/icons';
 
 const ListView = ({ trips }) => {
   const [typeFilter, setTypeFilter] = useState('all');
@@ -60,36 +55,38 @@ const ListView = ({ trips }) => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Type</InputLabel>
+      <Flex gap={4} mb={6} flexWrap="wrap">
+        <Box>
+          <Text fontSize="sm" mb={2} fontWeight="500">Type</Text>
           <Select
             value={typeFilter}
-            label="Type"
             onChange={(e) => setTypeFilter(e.target.value)}
+            size="sm"
+            w="150px"
           >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="flight">✈️ Flights</MenuItem>
-            <MenuItem value="hotel">🏨 Hotels</MenuItem>
-            <MenuItem value="activity">🎭 Activities</MenuItem>
+            <option value="all">All</option>
+            <option value="flight">✈️ Flights</option>
+            <option value="hotel">🏨 Hotels</option>
+            <option value="activity">🎭 Activities</option>
           </Select>
-        </FormControl>
+        </Box>
 
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Date</InputLabel>
+        <Box>
+          <Text fontSize="sm" mb={2} fontWeight="500">Date</Text>
           <Select
             value={dateFilter}
-            label="Date"
             onChange={(e) => setDateFilter(e.target.value)}
+            size="sm"
+            w="150px"
           >
-            <MenuItem value="this-week">This Week</MenuItem>
-            <MenuItem value="this-month">This Month</MenuItem>
-            <MenuItem value="all-upcoming">All Upcoming</MenuItem>
+            <option value="this-week">This Week</option>
+            <option value="this-month">This Month</option>
+            <option value="all-upcoming">All Upcoming</option>
           </Select>
-        </FormControl>
-      </Box>
+        </Box>
+      </Flex>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <VStack spacing={6} align="stretch">
         {sortedDates.map(dateKey => {
           const { date, events } = eventsByDate[dateKey];
           
@@ -107,108 +104,114 @@ const ListView = ({ trips }) => {
           }, {});
 
           return (
-            <Paper key={dateKey} elevation={2} sx={{ overflow: 'hidden' }}>
-              <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2 }}>
-                <Typography variant="h6">
+            <Box
+              key={dateKey}
+              bg="white"
+              borderRadius="lg"
+              overflow="hidden"
+              boxShadow="md"
+            >
+              <Box bg="brand.500" color="white" p={4}>
+                <Heading size="md" fontWeight="600">
                   📅 {format(date, 'EEEE, MMMM d, yyyy').toUpperCase()}
-                </Typography>
+                </Heading>
               </Box>
 
-              <CardContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box p={4}>
+                <VStack spacing={6} align="stretch">
                   {Object.values(eventsByTrip).map(({ trip, events }) => (
                     <Box key={trip.id}>
-                      <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                            {trip.flag} {trip.name}
-                          </Typography>
-                          {trip.tags.map(tag => (
-                            <Chip key={tag} label={`🏷️ ${tag}`} size="small" color="primary" />
-                          ))}
-                        </Box>
-                        <Divider />
-                      </Box>
+                      <Flex align="center" gap={2} mb={2}>
+                        <Heading size="sm" fontWeight="600">
+                          {trip.flag} {trip.name}
+                        </Heading>
+                        {trip.tags.map(tag => (
+                          <Tag key={tag} size="sm" colorScheme="blue" borderRadius="full">
+                            <TagLabel>🏷️ {tag}</TagLabel>
+                          </Tag>
+                        ))}
+                      </Flex>
+                      <Divider mb={4} />
 
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pl: 2 }}>
+                      <VStack spacing={4} align="stretch" pl={4}>
                         {events.map((event, idx) => (
                           <Box key={idx}>
                             {event.type === 'gap' ? (
-                              <Alert severity="warning" sx={{ mb: 1 }}>
-                                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                  {getIconForType(event.type)} {event.time}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                  6 hours unplanned
-                                </Typography>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                  <Button size="small" variant="outlined">
-                                    View Suggestions
-                                  </Button>
-                                  <Button size="small" variant="text">
-                                    Dismiss
-                                  </Button>
+                              <Alert status="warning" borderRadius="md">
+                                <AlertIcon />
+                                <Box flex="1">
+                                  <Text fontWeight="600" fontSize="sm" mb={1}>
+                                    {getIconForType(event.type)} {event.time}
+                                  </Text>
+                                  <Text fontSize="sm" color="gray.700" mb={2}>
+                                    6 hours unplanned
+                                  </Text>
+                                  <Flex gap={2}>
+                                    <Button size="sm" variant="outline" colorScheme="orange">
+                                      View Suggestions
+                                    </Button>
+                                    <Button size="sm" variant="ghost">
+                                      Dismiss
+                                    </Button>
+                                  </Flex>
                                 </Box>
                               </Alert>
                             ) : (
-                              <Box className="list-event-item">
-                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                                  <Typography variant="h6" sx={{ fontSize: '1.5rem' }}>
-                                    {getIconForType(event.type)}
-                                  </Typography>
-                                  <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                      {event.time} • {event.title}
-                                    </Typography>
-                                    {event.location && (
-                                      <Typography variant="body2" color="text.secondary">
-                                        📍 {event.location}
-                                      </Typography>
-                                    )}
-                                    {event.confirmation && (
-                                      <Typography variant="body2" color="text.secondary">
-                                        Conf: {event.confirmation}
-                                      </Typography>
-                                    )}
-                                    {event.details && (
-                                      <Typography variant="body2" color="text.secondary">
-                                        {event.details}
-                                      </Typography>
-                                    )}
-                                    <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
-                                      <Button size="small" variant="text">
-                                        View Details
+                              <Flex gap={4} align="flex-start">
+                                <Text fontSize="2xl">{getIconForType(event.type)}</Text>
+                                <Box flex="1">
+                                  <Text fontWeight="600" fontSize="md">
+                                    {event.time} • {event.title}
+                                  </Text>
+                                  {event.location && (
+                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                      📍 {event.location}
+                                    </Text>
+                                  )}
+                                  {event.confirmation && (
+                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                      Conf: {event.confirmation}
+                                    </Text>
+                                  )}
+                                  {event.details && (
+                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                      {event.details}
+                                    </Text>
+                                  )}
+                                  <Flex gap={2} mt={2} flexWrap="wrap">
+                                    <Button size="sm" variant="ghost" colorScheme="brand">
+                                      View Details
+                                    </Button>
+                                    {(event.type === 'flight' || event.type === 'hotel') && (
+                                      <Button size="sm" variant="ghost" leftIcon={<AttachmentIcon />}>
+                                        {event.type === 'flight' ? 'Attachment' : 'Confirmation'}
                                       </Button>
-                                      {(event.type === 'flight' || event.type === 'hotel') && (
-                                        <Button size="small" variant="text" startIcon={<AttachFileIcon />}>
-                                          {event.type === 'flight' ? 'Attachment' : 'Confirmation'}
-                                        </Button>
-                                      )}
-                                      {event.type === 'planning' && (
-                                        <Button size="small" variant="text" startIcon={<AddIcon />}>
-                                          Add Event
-                                        </Button>
-                                      )}
-                                    </Box>
-                                  </Box>
+                                    )}
+                                    {event.type === 'planning' && (
+                                      <Button size="sm" variant="ghost" leftIcon={<AddIcon />}>
+                                        Add Event
+                                      </Button>
+                                    )}
+                                  </Flex>
                                 </Box>
-                              </Box>
+                              </Flex>
                             )}
+                            {idx < events.length - 1 && <Divider mt={4} />}
                           </Box>
                         ))}
-                      </Box>
+                      </VStack>
                     </Box>
                   ))}
-                </Box>
-              </CardContent>
-            </Paper>
+                </VStack>
+              </Box>
+            </Box>
           );
         })}
-      </Box>
+      </VStack>
 
-      <Box sx={{ textAlign: 'center', mt: 3 }}>
-        <Button variant="outlined">Load More Days...</Button>
-      </Box>
+      <Flex justify="center" mt={6}>
+        <Button variant="outline">Load More Days...</Button>
+      </Flex>
     </Box>
   );
 };
