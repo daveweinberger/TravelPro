@@ -175,6 +175,9 @@ const Recommendations = () => {
             <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/'); }}>
               <HomeIcon sx={{ mr: 1 }} /> Home
             </MenuItem>
+            <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/trips'); }}>
+              <AddIcon sx={{ mr: 1 }} /> My Trips
+            </MenuItem>
             <MenuItem onClick={() => { setMenuAnchorEl(null); navigate('/recommendations'); }}>
               <TipIcon sx={{ mr: 1 }} /> Recommendations
             </MenuItem>

@@ -1,0 +1,26 @@
+.timeline {
+  position: relative;
+}
+
+.timeline-event {
+  padding: 16px 0;
+}
+
+.timeline-gap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.gap-line {
+  width: 2px;
+  height: 30px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ed6c02 0px,
+    #ed6c02 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
