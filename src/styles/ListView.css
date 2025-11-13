@@ -1,0 +1,16 @@
+.list-event-item {
+  padding: 12px 0;
+}
+
+.list-event-item:not(:last-child) {
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .list-event-item {
+    padding: 8px 0;
+  }
+}

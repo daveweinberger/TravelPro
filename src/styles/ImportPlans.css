@@ -1,0 +1,13 @@
+.upload-zone {
+  transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+  border-color: #1976d2 !important;
+  background-color: rgba(25, 118, 210, 0.04) !important;
+}
+
+.upload-zone.drag-active {
+  border-color: #1976d2 !important;
+  background-color: rgba(25, 118, 210, 0.08) !important;
+}
