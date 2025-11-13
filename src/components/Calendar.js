@@ -6,6 +6,7 @@ import {
   Heading,
   Text,
   Flex,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 const Calendar = ({ trips, selectedDate, onDateSelect }) => {
@@ -15,6 +16,17 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
   
   const startDayOfWeek = getDay(monthStart);
   const emptyDays = Array(startDayOfWeek).fill(null);
+  
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const dayBg = useColorModeValue('white', 'gray.700');
+  const dayBorder = useColorModeValue('gray.200', 'gray.600');
+  const dayText = useColorModeValue('gray.800', 'gray.100');
+  const weekdayText = useColorModeValue('gray.600', 'gray.400');
+  const selectedBg = useColorModeValue('brand.50', 'brand.900');
+  const selectedText = useColorModeValue('brand.600', 'brand.200');
+  const alertBg = useColorModeValue('red.50', 'red.900');
+  const alertBorder = useColorModeValue('red.400', 'red.500');
+  const hoverBorder = useColorModeValue('brand.500', 'brand.400');
 
   const getEventsForDate = (date) => {
     const events = [];
@@ -35,7 +47,7 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
 
   return (
     <Box
-      bg="white"
+      bg={cardBg}
       borderRadius="lg"
       p={{ base: 3, md: 5 }}
       boxShadow="base"
@@ -56,7 +68,7 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
             key={day}
             textAlign="center"
             fontWeight="600"
-            color="gray.600"
+            color={weekdayText}
             fontSize="sm"
             py={2}
           >
@@ -83,20 +95,20 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
               p={2}
               borderWidth="1px"
               borderColor={
-                isSelected ? 'brand.500' : 
-                alert ? 'red.400' : 
-                'gray.200'
+                isSelected ? hoverBorder : 
+                alert ? alertBorder : 
+                dayBorder
               }
               borderRadius="md"
               cursor="pointer"
               bg={
-                isSelected ? 'brand.50' : 
-                alert ? 'red.50' : 
-                'white'
+                isSelected ? selectedBg : 
+                alert ? alertBg : 
+                dayBg
               }
               transition="all 0.2s"
               _hover={{
-                borderColor: 'brand.500',
+                borderColor: hoverBorder,
                 boxShadow: 'md',
                 transform: 'translateY(-2px)',
               }}
@@ -108,7 +120,7 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
                 <Text
                   fontWeight="600"
                   fontSize="sm"
-                  color={isSelected ? 'brand.600' : 'gray.800'}
+                  color={isSelected ? selectedText : dayText}
                 >
                   {format(day, 'd')}
                 </Text>
@@ -130,7 +142,7 @@ const Calendar = ({ trips, selectedDate, onDateSelect }) => {
                 {events.length > 3 && (
                   <Text
                     fontSize="xs"
-                    color="gray.600"
+                    color={weekdayText}
                     fontWeight="600"
                   >
                     +{events.length - 3}

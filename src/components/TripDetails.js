@@ -12,10 +12,16 @@ import {
   TagLabel,
   VStack,
   Divider,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 
 const TripDetails = ({ trips, selectedDate }) => {
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const textColor = useColorModeValue('gray.700', 'gray.300');
+  const mutedText = useColorModeValue('gray.600', 'gray.400');
+  const headingColor = useColorModeValue('gray.800', 'gray.100');
   const getEventsForDate = (date) => {
     const events = [];
     trips.forEach(trip => {
@@ -45,13 +51,13 @@ const TripDetails = ({ trips, selectedDate }) => {
   if (events.length === 0) {
     return (
       <Box
-        bg="white"
+        bg={cardBg}
         borderRadius="lg"
         p={8}
         textAlign="center"
         boxShadow="base"
       >
-        <Text color="gray.600" mb={4}>
+        <Text color={mutedText} mb={4}>
           No events scheduled for {format(selectedDate, 'MMMM d, yyyy')}
         </Text>
         <Button leftIcon={<AddIcon />} colorScheme="brand">
@@ -78,7 +84,7 @@ const TripDetails = ({ trips, selectedDate }) => {
       {Object.values(groupedEvents).map(({ trip, events }) => (
         <Box
           key={trip.id}
-          bg="white"
+          bg={cardBg}
           borderRadius="lg"
           overflow="hidden"
           boxShadow="md"
@@ -88,10 +94,11 @@ const TripDetails = ({ trips, selectedDate }) => {
             align="center"
             p={4}
             borderBottomWidth="1px"
+            borderColor={borderColor}
             flexWrap="wrap"
             gap={2}
           >
-            <Heading size="md" fontWeight="600">
+            <Heading size="md" fontWeight="600" color={headingColor}>
               {trip.flag} {trip.name}
             </Heading>
             <Flex gap={2} flexWrap="wrap">
@@ -129,19 +136,19 @@ const TripDetails = ({ trips, selectedDate }) => {
                     <Flex gap={4} align="flex-start">
                       <Text fontSize="2xl">{getIconForType(event.type)}</Text>
                       <Box flex="1">
-                        <Text fontWeight="600" fontSize="sm" color="gray.700">
+                        <Text fontWeight="600" fontSize="sm" color={textColor}>
                           {event.time}
                         </Text>
-                        <Text fontSize="md" fontWeight="500" mt={1}>
+                        <Text fontSize="md" fontWeight="500" mt={1} color={headingColor}>
                           {event.title}
                         </Text>
                         {event.location && (
-                          <Text fontSize="sm" color="gray.600" mt={1}>
+                          <Text fontSize="sm" color={mutedText} mt={1}>
                             📍 {event.location}
                           </Text>
                         )}
                         {event.confirmation && (
-                          <Text fontSize="sm" color="gray.600" mt={1}>
+                          <Text fontSize="sm" color={mutedText} mt={1}>
                             Conf: {event.confirmation}
                           </Text>
                         )}

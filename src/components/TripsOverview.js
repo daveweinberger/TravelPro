@@ -16,6 +16,7 @@ import {
   MenuList,
   MenuItem,
   Divider,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -25,6 +26,7 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import Footer from './Footer';
 
 const TripsOverview = () => {
   const navigate = useNavigate();
@@ -95,12 +97,18 @@ const TripsOverview = () => {
     }
   };
 
+  const bgColor = useColorModeValue('ios.secondaryBackground', 'gray.900');
+  const navBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
+
   return (
-    <Box minH="100vh" bg="ios.secondaryBackground">
+    <Flex direction="column" minH="100vh" bg={bgColor}>
       <Box
-        bg="white"
+        bg={navBg}
         borderBottomWidth="1px"
-        borderColor="gray.200"
+        borderColor={borderColor}
         px={4}
         py={3}
         position="sticky"
@@ -144,7 +152,7 @@ const TripsOverview = () => {
         </Flex>
       </Box>
 
-      <Container maxW="container.xl" py={6}>
+      <Container maxW="container.xl" py={6} flex="1">
         <Flex justify="space-between" align="center" mb={6}>
           <Heading size="lg">My Trips</Heading>
           <Button leftIcon={<AddIcon />} colorScheme="brand">
@@ -154,7 +162,7 @@ const TripsOverview = () => {
 
         <VStack spacing={4} align="stretch" mb={8}>
           {activeTrips.map((trip) => (
-            <Box key={trip.id} bg="white" borderRadius="lg" p={6} boxShadow="md">
+            <Box key={trip.id} bg={cardBg} borderRadius="lg" p={6} boxShadow="md">
               <Flex justify="space-between" align="flex-start" mb={4}>
                 <Flex align="center" gap={2}>
                   <Text fontSize="2xl">{trip.flag}</Text>
@@ -165,7 +173,7 @@ const TripsOverview = () => {
 
               <Divider mb={4} />
 
-              <Text fontSize="sm" color="gray.600" mb={2}>
+              <Text fontSize="sm" color={textColor} mb={2}>
                 {trip.dates} • {trip.duration}
               </Text>
               <Text mb={4}>
@@ -200,7 +208,7 @@ const TripsOverview = () => {
                   )}
                 </Flex>
 
-                <Text fontSize="sm" color="gray.600" mb={4}>
+                <Text fontSize="sm" color={textColor} mb={4}>
                   {trip.next}
                 </Text>
 
@@ -241,7 +249,9 @@ const TripsOverview = () => {
           ))}
         </Flex>
       </Container>
-    </Box>
+
+      <Footer />
+    </Flex>
   );
 };
 

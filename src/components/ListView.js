@@ -13,12 +13,18 @@ import {
   TagLabel,
   Select,
   Divider,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { AddIcon, AttachmentIcon } from '@chakra-ui/icons';
 
 const ListView = ({ trips }) => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('this-week');
+
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const headerBg = useColorModeValue('brand.500', 'brand.600');
+  const textColor = useColorModeValue('gray.700', 'gray.300');
+  const mutedText = useColorModeValue('gray.600', 'gray.400');
 
   const getIconForType = (type) => {
     const icons = {
@@ -106,12 +112,12 @@ const ListView = ({ trips }) => {
           return (
             <Box
               key={dateKey}
-              bg="white"
+              bg={cardBg}
               borderRadius="lg"
               overflow="hidden"
               boxShadow="md"
             >
-              <Box bg="brand.500" color="white" p={4}>
+              <Box bg={headerBg} color="white" p={4}>
                 <Heading size="md" fontWeight="600">
                   📅 {format(date, 'EEEE, MMMM d, yyyy').toUpperCase()}
                 </Heading>
@@ -143,7 +149,7 @@ const ListView = ({ trips }) => {
                                   <Text fontWeight="600" fontSize="sm" mb={1}>
                                     {getIconForType(event.type)} {event.time}
                                   </Text>
-                                  <Text fontSize="sm" color="gray.700" mb={2}>
+                                  <Text fontSize="sm" color={textColor} mb={2}>
                                     6 hours unplanned
                                   </Text>
                                   <Flex gap={2}>
@@ -164,17 +170,17 @@ const ListView = ({ trips }) => {
                                     {event.time} • {event.title}
                                   </Text>
                                   {event.location && (
-                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                    <Text fontSize="sm" color={mutedText} mt={1}>
                                       📍 {event.location}
                                     </Text>
                                   )}
                                   {event.confirmation && (
-                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                    <Text fontSize="sm" color={mutedText} mt={1}>
                                       Conf: {event.confirmation}
                                     </Text>
                                   )}
                                   {event.details && (
-                                    <Text fontSize="sm" color="gray.600" mt={1}>
+                                    <Text fontSize="sm" color={mutedText} mt={1}>
                                       {event.details}
                                     </Text>
                                   )}

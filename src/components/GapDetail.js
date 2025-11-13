@@ -15,13 +15,21 @@ import {
   Divider,
   Alert,
   AlertIcon,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { ArrowBackIcon, AddIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import Footer from './Footer';
 
 const GapDetail = () => {
   const navigate = useNavigate();
   const [userAnchorEl, setUserAnchorEl] = useState(null);
+  
+  const bgColor = useColorModeValue('ios.secondaryBackground', 'gray.900');
+  const navBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
 
   const gapInfo = {
     date: 'Thursday, June 17, 2025',
@@ -88,11 +96,11 @@ const GapDetail = () => {
   ];
 
   return (
-    <Box minH="100vh" bg="ios.secondaryBackground">
+    <Flex direction="column" minH="100vh" bg={bgColor}>
       <Box
-        bg="white"
+        bg={navBg}
         borderBottomWidth="1px"
-        borderColor="gray.200"
+        borderColor={borderColor}
         px={4}
         py={3}
         position="sticky"
@@ -124,12 +132,12 @@ const GapDetail = () => {
         </Flex>
       </Box>
 
-      <Container maxW="container.md" py={6}>
+      <Container maxW="container.md" py={6} flex="1">
         <Heading size="lg" mb={2}>
           {gapInfo.date} • {gapInfo.location}
         </Heading>
 
-        <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="md">
+        <Box bg={cardBg} borderRadius="lg" p={6} mb={6} boxShadow="md">
           <Heading size="md" mb={4}>
             TIMELINE
           </Heading>
@@ -140,7 +148,7 @@ const GapDetail = () => {
               <Text fontWeight="600" mb={1}>
                 {gapInfo.startEvent.time} {gapInfo.startEvent.icon} {gapInfo.startEvent.title}
               </Text>
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textColor}>
                 {gapInfo.startEvent.address}
               </Text>
             </Box>
@@ -160,14 +168,14 @@ const GapDetail = () => {
               <Text fontWeight="600" mb={1}>
                 {gapInfo.endEvent.time} {gapInfo.endEvent.icon} {gapInfo.endEvent.title}
               </Text>
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textColor}>
                 {gapInfo.endEvent.address}
               </Text>
             </Box>
           </VStack>
         </Box>
 
-        <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="md">
+        <Box bg={cardBg} borderRadius="lg" p={6} mb={6} boxShadow="md">
           <Heading size="md" mb={4}>
             💡 SMART SUGGESTIONS
           </Heading>
@@ -187,11 +195,11 @@ const GapDetail = () => {
                         <Text fontWeight="600" mb={1}>
                           {item.name}
                         </Text>
-                        <Text fontSize="sm" color="gray.600" mb={2}>
+                        <Text fontSize="sm" color={textColor} mb={2}>
                           {item.details}
                         </Text>
                         {item.time && (
-                          <Text fontSize="sm" color="gray.600" mb={2}>
+                          <Text fontSize="sm" color={textColor} mb={2}>
                             {item.time}
                           </Text>
                         )}
@@ -264,7 +272,9 @@ const GapDetail = () => {
           </Box>
         </Alert>
       </Container>
-    </Box>
+
+      <Footer />
+    </Flex>
   );
 };
 

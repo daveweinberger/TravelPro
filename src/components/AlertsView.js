@@ -17,10 +17,14 @@ import {
   AlertIcon,
   Divider,
   Badge,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 const AlertsView = () => {
   const [activeTab, setActiveTab] = useState(0);
+  
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
 
   const gapAlerts = [
     {
@@ -105,7 +109,7 @@ const AlertsView = () => {
           <TabPanel px={0}>
             <VStack spacing={6} align="stretch">
               {/* Gap Alerts Section */}
-              <Box bg="white" borderRadius="lg" overflow="hidden" boxShadow="md">
+              <Box bg={cardBg} borderRadius="lg" overflow="hidden" boxShadow="md">
                 <Box bg="orange.100" p={4}>
                   <Heading size="md" color="orange.800">⚠️ GAP ALERTS</Heading>
                 </Box>
@@ -143,7 +147,7 @@ const AlertsView = () => {
                           ))}
                         </Flex>
 
-                        <Text fontSize="sm" color="gray.600" mb={2}>
+                        <Text fontSize="sm" color={textColor} mb={2}>
                           {alert.date} • {alert.time}
                         </Text>
 
@@ -187,7 +191,7 @@ const AlertsView = () => {
               </Box>
 
               {/* Upcoming Reminders Section */}
-              <Box bg="white" borderRadius="lg" overflow="hidden" boxShadow="md">
+              <Box bg={cardBg} borderRadius="lg" overflow="hidden" boxShadow="md">
                 <Box bg="blue.100" p={4}>
                   <Heading size="md" color="blue.800">📅 UPCOMING REMINDERS</Heading>
                 </Box>
@@ -195,13 +199,13 @@ const AlertsView = () => {
                   <VStack spacing={4} align="stretch">
                     {upcomingReminders.map((reminder, idx) => (
                       <Box key={idx} borderWidth="1px" borderRadius="md" p={4}>
-                        <Text fontSize="sm" color="gray.600" mb={1}>
+                        <Text fontSize="sm" color={textColor} mb={1}>
                           📱 {reminder.timing}
                         </Text>
                         <Text fontWeight="600" mb={1}>
                           {reminder.title}
                         </Text>
-                        <Text fontSize="sm" color="gray.600" mb={3}>
+                        <Text fontSize="sm" color={textColor} mb={3}>
                           {reminder.trip}
                         </Text>
                         <Flex gap={2}>
@@ -251,13 +255,13 @@ const AlertsView = () => {
 
           <TabPanel px={0}>
             <Box textAlign="center" py={8}>
-              <Text color="gray.600">Upcoming reminders view</Text>
+              <Text color={textColor}>Upcoming reminders view</Text>
             </Box>
           </TabPanel>
 
           <TabPanel px={0}>
             <Box textAlign="center" py={8}>
-              <Text color="gray.600">Resolved alerts view</Text>
+              <Text color={textColor}>Resolved alerts view</Text>
             </Box>
           </TabPanel>
         </TabPanels>

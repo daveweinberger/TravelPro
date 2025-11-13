@@ -26,6 +26,7 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -39,6 +40,7 @@ import TripDetails from './TripDetails';
 import ListView from './ListView';
 import ImportPlans from './ImportPlans';
 import AlertsView from './AlertsView';
+import Footer from './Footer';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
@@ -139,14 +141,19 @@ const HomeScreen = () => {
   ];
 
   const tags = ['Europe', 'Asia', 'Work'];
+  
+  const bgColor = useColorModeValue('ios.secondaryBackground', 'gray.900');
+  const navBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const cardBg = useColorModeValue('white', 'gray.800');
 
   return (
-    <Box minH="100vh" bg="ios.secondaryBackground">
+    <Flex direction="column" minH="100vh" bg={bgColor}>
       {/* iOS-style Navigation Bar */}
       <Box
-        bg="white"
+        bg={navBg}
         borderBottomWidth="1px"
-        borderColor="gray.200"
+        borderColor={borderColor}
         px={4}
         py={3}
         position="sticky"
@@ -197,8 +204,8 @@ const HomeScreen = () => {
         </Flex>
       </Box>
 
-      <Container maxW="container.xl" py={6}>
-        <Box bg="white" borderRadius="lg" p={6} boxShadow="base">
+      <Container maxW="container.xl" py={6} flex="1">
+        <Box bg={cardBg} borderRadius="lg" p={6} boxShadow="base">
           {/* Header */}
           <Flex justify="space-between" align="center" mb={6}>
             <Heading size="lg">All Trips</Heading>
@@ -309,7 +316,9 @@ const HomeScreen = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Box>
+
+      <Footer />
+    </Flex>
   );
 };
 

@@ -131,15 +131,15 @@ const theme = extendTheme({
   components,
   config: {
     initialColorMode: 'light',
-    useSystemColorMode: true,
+    useSystemColorMode: false,
   },
   styles: {
-    global: {
+    global: (props) => ({
       body: {
-        bg: 'ios.secondaryBackground',
-        color: 'gray.800',
+        bg: props.colorMode === 'dark' ? 'gray.900' : 'ios.secondaryBackground',
+        color: props.colorMode === 'dark' ? 'gray.100' : 'gray.800',
       },
-    },
+    }),
   },
 });
 

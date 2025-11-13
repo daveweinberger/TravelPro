@@ -13,6 +13,7 @@ import {
   Alert,
   AlertIcon,
   useToast,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import {
   AddIcon,
@@ -25,6 +26,13 @@ const ImportPlans = ({ trips, onClose }) => {
   const [selectedTrip, setSelectedTrip] = useState('europe-2025');
   const [dragActive, setDragActive] = useState(false);
   const toast = useToast();
+  
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const uploadBg = useColorModeValue('gray.50', 'gray.700');
+  const uploadBgActive = useColorModeValue('brand.50', 'brand.900');
+  const borderColor = useColorModeValue('gray.300', 'gray.600');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
+  const mutedColor = useColorModeValue('gray.500', 'gray.500');
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -42,13 +50,27 @@ const ImportPlans = ({ trips, onClose }) => {
     setDragActive(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      toast({
-        title: 'Files uploaded',
-        description: `${e.dataTransfer.files.length} file(s) ready for processing`,
-        status: 'success',
-        duration: 3000,
-      });
+      const files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
     }
+  };
+
+  const handleFileInput = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      handleFiles(files);
+    }
+  };
+
+  const handleFiles = (files) => {
+    toast({
+      title: 'Files uploaded',
+      description: `${files.length} file(s) ready for processing`,
+      status: 'success',
+      duration: 3000,
+    });
+    // Here you would typically process the files
+    // For now, just show success message
   };
 
   const handleCopyEmail = () => {
@@ -84,19 +106,21 @@ const ImportPlans = ({ trips, onClose }) => {
       </Flex>
 
       {/* Upload Documents Section */}
-      <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="base">
+      <Box bg={cardBg} borderRadius="lg" p={6} mb={6} boxShadow="base">
         <Heading size="md" textAlign="center" mb={4}>
           📄 Upload Documents
         </Heading>
         
         <Box
+          as="label"
+          htmlFor="file-upload"
           borderWidth="2px"
           borderStyle="dashed"
-          borderColor={dragActive ? 'brand.500' : 'gray.300'}
+          borderColor={dragActive ? 'brand.500' : borderColor}
           borderRadius="lg"
           p={8}
           textAlign="center"
-          bg={dragActive ? 'brand.50' : 'gray.50'}
+          bg={dragActive ? uploadBgActive : uploadBg}
           cursor="pointer"
           transition="all 0.2s"
           onDragEnter={handleDrag}
@@ -105,33 +129,62 @@ const ImportPlans = ({ trips, onClose }) => {
           onDrop={handleDrop}
           _hover={{ borderColor: 'brand.500', bg: 'brand.50' }}
           mb={4}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          minH="200px"
         >
-          <AttachmentIcon boxSize={12} color="gray.400" mb={2} />
-          <Text fontSize="lg" mb={2}>
+          <Box as={AttachmentIcon} boxSize={16} color="gray.400" mb={4} />
+          <Text fontSize="lg" fontWeight="500">
             Drop files here or click
           </Text>
+          <Input
+            id="file-upload"
+            type="file"
+            multiple
+            accept=".pdf,.png,.jpg,.jpeg,.heic"
+            onChange={handleFileInput}
+            display="none"
+          />
         </Box>
 
-        <Text fontSize="sm" color="gray.600" textAlign="center" mb={1}>
+        <Text fontSize="sm" color={textColor} textAlign="center" mb={1}>
           Supported: PDF, PNG, JPG, HEIC
         </Text>
-        <Text fontSize="sm" color="gray.600" textAlign="center" mb={4}>
+        <Text fontSize="sm" color={textColor} textAlign="center" mb={4}>
           Max size: 10 MB per file
         </Text>
 
         <Flex justify="center">
-          <Button leftIcon={<AttachmentIcon />} colorScheme="brand">
+          <Button
+            as="label"
+            htmlFor="file-upload-button"
+            leftIcon={<AttachmentIcon />}
+            colorScheme="brand"
+            cursor="pointer"
+          >
             Choose Files
+            <Input
+              id="file-upload-button"
+              type="file"
+              multiple
+              accept=".pdf,.png,.jpg,.jpeg,.heic"
+              onChange={handleFileInput}
+              display="none"
+            />
           </Button>
         </Flex>
       </Box>
 
-      <Divider my={6}>
-        <Text fontSize="sm" color="gray.500">OR</Text>
-      </Divider>
+      <Flex align="center" my={6}>
+        <Divider />
+        <Text px={4} fontSize="sm" color={mutedColor} whiteSpace="nowrap">OR</Text>
+        <Divider />
+      </Flex>
 
       {/* Forward Email Section */}
-      <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="base">
+      <Box bg={cardBg} borderRadius="lg" p={6} mb={6} boxShadow="base">
         <Heading size="md" textAlign="center" mb={4}>
           📧 Forward Email
         </Heading>
@@ -168,12 +221,14 @@ const ImportPlans = ({ trips, onClose }) => {
         </Button>
       </Box>
 
-      <Divider my={6}>
-        <Text fontSize="sm" color="gray.500">OR</Text>
-      </Divider>
+      <Flex align="center" my={6}>
+        <Divider />
+        <Text px={4} fontSize="sm" color={mutedColor} whiteSpace="nowrap">OR</Text>
+        <Divider />
+      </Flex>
 
       {/* Manual Entry Section */}
-      <Box bg="white" borderRadius="lg" p={6} mb={6} boxShadow="base">
+      <Box bg={cardBg} borderRadius="lg" p={6} mb={6} boxShadow="base">
         <Heading size="md" textAlign="center" mb={4}>
           ✍️ Manual Entry
         </Heading>
