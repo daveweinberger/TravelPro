@@ -130,9 +130,34 @@ travelpro/
 - Budget tracking
 - Packing list generator
 
+## Design System
+
+TravelPro follows a comprehensive design system focused on:
+- **Visual Hierarchy**: Unified multi-trip views with tag-based filtering
+- **Gap Detection**: Inline alerts, priority levels, and smart suggestions
+- **Tag System**: Flexible categorization by type, region, and purpose
+- **Accessibility**: High contrast, clear labels, dark mode support
+- **Progressive Disclosure**: Show essential info first, details on demand
+
+For detailed design documentation, see [DESIGN.md](DESIGN.md)
+
+## Key Design Principles
+
+1. **Unified Multi-Trip Organization**: Single view for all trips with smart filtering
+2. **Enhanced Gap Detection**: Visual timeline with priority-based alerts
+3. **Tag-Based Filtering**: Organize trips by multiple dimensions
+4. **Context-Aware Recommendations**: Smart suggestions based on location and interests
+5. **Accessible Design**: Built for everyone with WCAG compliance in mind
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+When contributing, please:
+- Follow the design system guidelines in DESIGN.md
+- Maintain accessibility standards
+- Write clear commit messages
+- Test on multiple screen sizes
 
 ## License
 
