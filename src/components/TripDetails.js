@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { format, isSameDay } from 'date-fns';
 import {
   Box,
@@ -13,10 +13,22 @@ import {
   VStack,
   Divider,
   useColorModeValue,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
+import { useTripContext } from '../context/TripContext';
+import EventDetailsModal from './EventDetailsModal';
 
 const TripDetails = ({ trips, selectedDate }) => {
+  const navigate = useNavigate();
+  const { dismissGap, getTagById } = useTripContext();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const toast = useToast();
+  
   const cardBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
   const textColor = useColorModeValue('gray.700', 'gray.300');
@@ -46,7 +58,28 @@ const TripDetails = ({ trips, selectedDate }) => {
     return icons[type] || '📎';
   };
 
-  const events = getEventsForDate(selectedDate);
+  const handleViewDetails = (event, trip) => {
+    setSelectedEvent(event);
+    setSelectedTrip(trip);
+    onOpen();
+  };
+
+  const handleDismissGap = (tripId, eventId) => {
+    dismissGap(tripId, eventId);
+    toast({
+      title: 'Gap dismissed',
+      status: 'info',
+      duration: 2000,
+    });
+  };
+
+  const handleViewSuggestions = (event) => {
+    navigate('/gap/1'); // Navigate to gap detail page
+  };
+
+  const events = getEventsForDate(selectedDate).filter(e => 
+    e.type !== 'gap' || !e.dismissed
+  );
   
   if (events.length === 0) {
     return (
@@ -80,8 +113,9 @@ const TripDetails = ({ trips, selectedDate }) => {
   }, {});
 
   return (
-    <VStack spacing={4} align="stretch">
-      {Object.values(groupedEvents).map(({ trip, events }) => (
+    <>
+      <VStack spacing={4} align="stretch">
+        {Object.values(groupedEvents).map(({ trip, events }) => (
         <Box
           key={trip.id}
           bg={cardBg}
@@ -102,11 +136,14 @@ const TripDetails = ({ trips, selectedDate }) => {
               {trip.flag} {trip.name}
             </Heading>
             <Flex gap={2} flexWrap="wrap">
-              {trip.tags.map(tag => (
-                <Tag key={tag} size="sm" colorScheme="blue" borderRadius="full">
-                  <TagLabel>🏷️ {tag}</TagLabel>
-                </Tag>
-              ))}
+              {trip.tags.map(tagId => {
+                const tag = getTagById(tagId);
+                return tag ? (
+                  <Tag key={tagId} size="sm" colorScheme={tag.color} borderRadius="full">
+                    <TagLabel>{tag.emoji} {tag.name}</TagLabel>
+                  </Tag>
+                ) : null;
+              })}
             </Flex>
           </Flex>
           
@@ -123,10 +160,19 @@ const TripDetails = ({ trips, selectedDate }) => {
                           {event.time} ({event.title})
                         </Text>
                         <Flex gap={2} mt={2}>
-                          <Button size="sm" variant="outline" colorScheme="orange">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            colorScheme="orange"
+                            onClick={() => handleViewSuggestions(event)}
+                          >
                             View Suggestions
                           </Button>
-                          <Button size="sm" variant="ghost">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDismissGap(trip.id, event.id)}
+                          >
                             Dismiss
                           </Button>
                         </Flex>
@@ -153,7 +199,12 @@ const TripDetails = ({ trips, selectedDate }) => {
                           </Text>
                         )}
                       </Box>
-                      <Button size="sm" variant="ghost" colorScheme="brand">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="brand"
+                        onClick={() => handleViewDetails(event, trip)}
+                      >
                         View Details
                       </Button>
                     </Flex>
@@ -163,8 +214,16 @@ const TripDetails = ({ trips, selectedDate }) => {
             </VStack>
           </Box>
         </Box>
-      ))}
-    </VStack>
+        ))}
+      </VStack>
+
+      <EventDetailsModal
+        isOpen={isOpen}
+        onClose={onClose}
+        event={selectedEvent}
+        trip={selectedTrip}
+      />
+    </>
   );
 };
 

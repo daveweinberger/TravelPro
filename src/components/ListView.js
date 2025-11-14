@@ -14,12 +14,23 @@ import {
   Select,
   Divider,
   useColorModeValue,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { AddIcon, AttachmentIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
+import { useTripContext } from '../context/TripContext';
+import EventDetailsModal from './EventDetailsModal';
 
 const ListView = ({ trips }) => {
+  const navigate = useNavigate();
+  const { dismissGap, getTagById } = useTripContext();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('this-week');
+  const toast = useToast();
 
   const cardBg = useColorModeValue('white', 'gray.800');
   const headerBg = useColorModeValue('brand.500', 'brand.600');
@@ -38,9 +49,30 @@ const ListView = ({ trips }) => {
     return icons[type] || '📎';
   };
 
-  // Flatten all events with their trip info
+  const handleViewDetails = (event, trip) => {
+    setSelectedEvent(event);
+    setSelectedTrip(trip);
+    onOpen();
+  };
+
+  const handleDismissGap = (tripId, eventId) => {
+    dismissGap(tripId, eventId);
+    toast({
+      title: 'Gap dismissed',
+      status: 'info',
+      duration: 2000,
+    });
+  };
+
+  const handleViewSuggestions = () => {
+    navigate('/gap/1');
+  };
+
+  // Flatten all events with their trip info, filter out dismissed gaps
   const allEvents = trips.flatMap(trip =>
-    trip.events.map(event => ({ ...event, trip }))
+    trip.events
+      .filter(event => event.type !== 'gap' || !event.dismissed)
+      .map(event => ({ ...event, trip }))
   );
 
   // Group events by date
@@ -131,11 +163,14 @@ const ListView = ({ trips }) => {
                         <Heading size="sm" fontWeight="600">
                           {trip.flag} {trip.name}
                         </Heading>
-                        {trip.tags.map(tag => (
-                          <Tag key={tag} size="sm" colorScheme="blue" borderRadius="full">
-                            <TagLabel>🏷️ {tag}</TagLabel>
-                          </Tag>
-                        ))}
+                        {trip.tags.map(tagId => {
+                          const tag = getTagById(tagId);
+                          return tag ? (
+                            <Tag key={tagId} size="sm" colorScheme={tag.color} borderRadius="full">
+                              <TagLabel>{tag.emoji} {tag.name}</TagLabel>
+                            </Tag>
+                          ) : null;
+                        })}
                       </Flex>
                       <Divider mb={4} />
 
@@ -153,10 +188,19 @@ const ListView = ({ trips }) => {
                                     6 hours unplanned
                                   </Text>
                                   <Flex gap={2}>
-                                    <Button size="sm" variant="outline" colorScheme="orange">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      colorScheme="orange"
+                                      onClick={handleViewSuggestions}
+                                    >
                                       View Suggestions
                                     </Button>
-                                    <Button size="sm" variant="ghost">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => handleDismissGap(trip.id, event.id)}
+                                    >
                                       Dismiss
                                     </Button>
                                   </Flex>
@@ -185,11 +229,21 @@ const ListView = ({ trips }) => {
                                     </Text>
                                   )}
                                   <Flex gap={2} mt={2} flexWrap="wrap">
-                                    <Button size="sm" variant="ghost" colorScheme="brand">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      colorScheme="brand"
+                                      onClick={() => handleViewDetails(event, trip)}
+                                    >
                                       View Details
                                     </Button>
                                     {(event.type === 'flight' || event.type === 'hotel') && (
-                                      <Button size="sm" variant="ghost" leftIcon={<AttachmentIcon />}>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        leftIcon={<AttachmentIcon />}
+                                        onClick={() => handleViewDetails(event, trip)}
+                                      >
                                         {event.type === 'flight' ? 'Attachment' : 'Confirmation'}
                                       </Button>
                                     )}
@@ -218,6 +272,13 @@ const ListView = ({ trips }) => {
       <Flex justify="center" mt={6}>
         <Button variant="outline">Load More Days...</Button>
       </Flex>
+
+      <EventDetailsModal
+        isOpen={isOpen}
+        onClose={onClose}
+        event={selectedEvent}
+        trip={selectedTrip}
+      />
     </Box>
   );
 };

@@ -55,7 +55,7 @@ const GapDetail = () => {
       title: 'Store Luggage & Explore',
       items: [
         {
-          icon: <LuggageIcon />,
+          icon: '🧳',
           name: 'Bounce Luggage Storage',
           details: '0.5 km from hotel • €8/day',
           activities: [
@@ -70,7 +70,7 @@ const GapDetail = () => {
       title: 'Extended Lunch Experience',
       items: [
         {
-          icon: <WineIcon />,
+          icon: '🍷',
           name: '3-hour Lunch + Wine Tasting',
           details: 'Le Fumoir near Louvre • ★ 4.6',
           time: '1:00 PM - 4:00 PM'
@@ -82,7 +82,7 @@ const GapDetail = () => {
       title: 'Early Check-in Next Hotel',
       items: [
         {
-          icon: <HotelIcon />,
+          icon: '🏨',
           name: 'Contact Hotel Lutetia',
           details: 'Request early check-in (scheduled Jun 18)'
         }

@@ -10,17 +10,28 @@ import {
   Tag,
   TagLabel,
   IconButton,
-  Badge,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   Divider,
   useColorModeValue,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  useDisclosure,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
-  BellIcon,
   SearchIcon,
   AddIcon,
   EditIcon,
@@ -30,8 +41,80 @@ import Footer from './Footer';
 
 const TripsOverview = () => {
   const navigate = useNavigate();
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [userAnchorEl, setUserAnchorEl] = useState(null);
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [editingTrip, setEditingTrip] = useState(null);
+  const [editedName, setEditedName] = useState('');
+  const [editedDates, setEditedDates] = useState('');
+  const [editedRoute, setEditedRoute] = useState('');
+
+  const handleEditTrip = (trip) => {
+    setEditingTrip(trip);
+    setEditedName(trip.name);
+    setEditedDates(trip.dates);
+    setEditedRoute(trip.route);
+    onOpen();
+  };
+
+  const handleSaveTrip = () => {
+    // In a real app, this would update the backend
+    toast({
+      title: 'Trip updated',
+      description: `${editedName} has been updated`,
+      status: 'success',
+      duration: 3000,
+    });
+    onClose();
+  };
+
+  const handleDuplicateTrip = (trip) => {
+    toast({
+      title: 'Trip duplicated',
+      description: `Created a copy of ${trip.name}`,
+      status: 'success',
+      duration: 3000,
+    });
+  };
+
+  const handleExportTrip = (trip) => {
+    toast({
+      title: 'Exporting trip',
+      description: `Preparing ${trip.name} for export...`,
+      status: 'info',
+      duration: 3000,
+    });
+  };
+
+  const handleArchiveTrip = (trip) => {
+    toast({
+      title: 'Trip archived',
+      description: `${trip.name} moved to archives`,
+      status: 'info',
+      duration: 3000,
+    });
+  };
+
+  const handleDeleteTrip = (trip) => {
+    if (window.confirm(`Are you sure you want to delete ${trip.name}? This cannot be undone.`)) {
+      toast({
+        title: 'Trip deleted',
+        description: `${trip.name} has been removed`,
+        status: 'error',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleViewPastTrip = (trip) => {
+    toast({
+      title: 'Opening trip',
+      description: `Loading ${trip.name}...`,
+      status: 'info',
+      duration: 2000,
+    });
+    // Navigate to trip view
+    navigate('/');
+  };
 
   const activeTrips = [
     {
@@ -216,14 +299,38 @@ const TripsOverview = () => {
                   <Button colorScheme="brand" onClick={() => navigate('/')}>
                     View Trip
                   </Button>
-                  <Button variant="outline" leftIcon={<EditIcon />}>
+                  <Button
+                    variant="outline"
+                    leftIcon={<EditIcon />}
+                    onClick={() => handleEditTrip(trip)}
+                  >
                     Edit
                   </Button>
-                  <IconButton
-                    icon={<span>⋮</span>}
-                    variant="ghost"
-                    aria-label="More options"
-                  />
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      icon={<span>⋮</span>}
+                      variant="ghost"
+                      aria-label="More options"
+                    />
+                    <MenuList>
+                      <MenuItem onClick={() => handleDuplicateTrip(trip)}>
+                        📋 Duplicate Trip
+                      </MenuItem>
+                      <MenuItem onClick={() => handleExportTrip(trip)}>
+                        📤 Export
+                      </MenuItem>
+                      <MenuItem onClick={() => handleArchiveTrip(trip)}>
+                        📦 Archive
+                      </MenuItem>
+                      <MenuItem
+                        color="red.500"
+                        onClick={() => handleDeleteTrip(trip)}
+                      >
+                        🗑️ Delete
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
                 </Flex>
             </Box>
           ))}
@@ -242,13 +349,62 @@ const TripsOverview = () => {
               key={idx}
               size="lg"
               cursor="pointer"
-              _hover={{ bg: 'gray.100' }}
+              _hover={{ bg: 'gray.200' }}
+              onClick={() => handleViewPastTrip(trip)}
             >
               <TagLabel>{trip.flag} {trip.name}</TagLabel>
             </Tag>
           ))}
         </Flex>
       </Container>
+
+      {/* Edit Trip Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent bg={cardBg}>
+          <ModalHeader>Edit Trip</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={4}>
+              <FormControl>
+                <FormLabel>Trip Name</FormLabel>
+                <Input
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  placeholder="e.g., Europe Summer 2025"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Dates</FormLabel>
+                <Input
+                  value={editedDates}
+                  onChange={(e) => setEditedDates(e.target.value)}
+                  placeholder="e.g., June 15 - July 20, 2025"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Route</FormLabel>
+                <Textarea
+                  value={editedRoute}
+                  onChange={(e) => setEditedRoute(e.target.value)}
+                  placeholder="e.g., Paris → Rome → Barcelona"
+                  rows={3}
+                />
+              </FormControl>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="brand" onClick={handleSaveTrip}>
+              Save Changes
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <Footer />
     </Flex>

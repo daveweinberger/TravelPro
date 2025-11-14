@@ -8,11 +8,6 @@ import {
   TagLabel,
   VStack,
   Flex,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   Alert,
   AlertIcon,
   Divider,
@@ -21,10 +16,12 @@ import {
 } from '@chakra-ui/react';
 
 const AlertsView = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeView, setActiveView] = useState('gaps');
   
   const cardBg = useColorModeValue('white', 'gray.800');
   const textColor = useColorModeValue('gray.600', 'gray.400');
+  const buttonBg = useColorModeValue('gray.100', 'gray.700');
+  const activeButtonBg = useColorModeValue('brand.500', 'brand.600');
 
   const gapAlerts = [
     {
@@ -89,24 +86,46 @@ const AlertsView = () => {
 
   return (
     <Box>
-      <Tabs index={activeTab} onChange={setActiveTab} colorScheme="brand">
-        <TabList mb={4}>
-          <Tab>
-            <Badge colorScheme="red" mr={2}>3</Badge>
-            ⚠️ Gaps
-          </Tab>
-          <Tab>
-            <Badge colorScheme="blue" mr={2}>5</Badge>
-            📅 Upcoming
-          </Tab>
-          <Tab>
-            <Badge colorScheme="green" mr={2}>12</Badge>
-            ✓ Resolved
-          </Tab>
-        </TabList>
+      {/* Segmented Control */}
+      <Flex gap={2} mb={6} flexWrap="wrap">
+        <Button
+          size="md"
+          bg={activeView === 'gaps' ? activeButtonBg : buttonBg}
+          color={activeView === 'gaps' ? 'white' : 'inherit'}
+          onClick={() => setActiveView('gaps')}
+          leftIcon={<Text>⚠️</Text>}
+          rightIcon={<Badge colorScheme="red" ml={1}>3</Badge>}
+          _hover={{ bg: activeView === 'gaps' ? activeButtonBg : 'gray.200' }}
+        >
+          Gaps
+        </Button>
+        <Button
+          size="md"
+          bg={activeView === 'upcoming' ? activeButtonBg : buttonBg}
+          color={activeView === 'upcoming' ? 'white' : 'inherit'}
+          onClick={() => setActiveView('upcoming')}
+          leftIcon={<Text>📅</Text>}
+          rightIcon={<Badge colorScheme="blue" ml={1}>5</Badge>}
+          _hover={{ bg: activeView === 'upcoming' ? activeButtonBg : 'gray.200' }}
+        >
+          Upcoming
+        </Button>
+        <Button
+          size="md"
+          bg={activeView === 'resolved' ? activeButtonBg : buttonBg}
+          color={activeView === 'resolved' ? 'white' : 'inherit'}
+          onClick={() => setActiveView('resolved')}
+          leftIcon={<Text>✓</Text>}
+          rightIcon={<Badge colorScheme="green" ml={1}>12</Badge>}
+          _hover={{ bg: activeView === 'resolved' ? activeButtonBg : 'gray.200' }}
+        >
+          Resolved
+        </Button>
+      </Flex>
 
-        <TabPanels>
-          <TabPanel px={0}>
+      {/* Content Area */}
+      <Box>
+        {activeView === 'gaps' && (
             <VStack spacing={6} align="stretch">
               {/* Gap Alerts Section */}
               <Box bg={cardBg} borderRadius="lg" overflow="hidden" boxShadow="md">
@@ -251,21 +270,20 @@ const AlertsView = () => {
                 <Button variant="outline">Settings</Button>
               </Flex>
             </VStack>
-          </TabPanel>
+        )}
 
-          <TabPanel px={0}>
-            <Box textAlign="center" py={8}>
-              <Text color={textColor}>Upcoming reminders view</Text>
-            </Box>
-          </TabPanel>
+        {activeView === 'upcoming' && (
+          <Box textAlign="center" py={8}>
+            <Text color={textColor}>Upcoming reminders view</Text>
+          </Box>
+        )}
 
-          <TabPanel px={0}>
-            <Box textAlign="center" py={8}>
-              <Text color={textColor}>Resolved alerts view</Text>
-            </Box>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+        {activeView === 'resolved' && (
+          <Box textAlign="center" py={8}>
+            <Text color={textColor}>Resolved alerts view</Text>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

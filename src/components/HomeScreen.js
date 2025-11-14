@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -9,6 +9,7 @@ import {
   Badge,
   Tag,
   TagLabel,
+  TagCloseButton,
   Select,
   Tabs,
   TabList,
@@ -35,112 +36,59 @@ import {
   AddIcon,
 } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTripContext } from '../context/TripContext';
 import Calendar from './Calendar';
 import TripDetails from './TripDetails';
 import ListView from './ListView';
 import ImportPlans from './ImportPlans';
 import AlertsView from './AlertsView';
+import TagManagementModal from './TagManagementModal';
 import Footer from './Footer';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isTagModalOpen, onOpen: onTagModalOpen, onClose: onTagModalClose } = useDisclosure();
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 15));
   const [selectedTrip, setSelectedTrip] = useState('all');
+  const [selectedTags, setSelectedTags] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  
+  const { trips, availableTags } = useTripContext();
 
-  const trips = [
-    {
-      id: 'europe-2025',
-      name: 'EUROPE SUMMER 2025',
-      tags: ['Vacation', 'Europe'],
-      flag: '🇫🇷',
-      events: [
-        {
-          date: new Date(2025, 5, 15),
-          type: 'flight',
-          time: '10:30 AM',
-          title: 'Flight BA 2341: JFK → CDG',
-          confirmation: 'ABC123',
-          location: 'Paris',
-          details: 'Terminal 7, Gate B22'
-        },
-        {
-          date: new Date(2025, 5, 15),
-          type: 'hotel',
-          time: '3:00 PM',
-          title: 'Hotel Le Marais Check-in',
-          confirmation: 'HTL789',
-          location: 'Paris',
-          details: '123 Rue Saint-Antoine'
-        },
-        {
-          date: new Date(2025, 5, 17),
-          type: 'hotel',
-          time: '12:00 PM',
-          title: 'Hotel Le Marais Checkout',
-          location: 'Paris'
-        },
-        {
-          date: new Date(2025, 5, 17),
-          type: 'gap',
-          time: '2:00 PM - 8:00 PM',
-          title: 'GAP: 6 hours',
-          alert: true,
-          location: 'Paris'
-        },
-        {
-          date: new Date(2025, 5, 17),
-          type: 'dining',
-          time: '8:00 PM',
-          title: 'Dinner: Le Comptoir',
-          confirmation: 'RES456',
-          location: 'Paris',
-          details: 'Reservation for 2'
-        },
-        {
-          date: new Date(2025, 5, 18),
-          type: 'flight',
-          time: '2:15 PM',
-          title: 'Flight AF 5678: CDG → FCO',
-          location: 'Paris → Rome',
-          confirmation: 'XYZ456',
-          details: 'Terminal 2E, Gate K41'
-        },
-        {
-          date: new Date(2025, 5, 19),
-          type: 'activity',
-          time: '10:00 AM',
-          title: 'Colosseum Tour',
-          location: 'Rome'
-        }
-      ]
-    },
-    {
-      id: 'asia-2025',
-      name: 'SOUTHEAST ASIA',
-      tags: ['Vacation', 'Asia'],
-      flag: '🇹🇭',
-      events: [
-        {
-          date: new Date(2025, 5, 18),
-          type: 'planning',
-          time: 'All day',
-          title: 'Planning: Review hotel options in Bangkok',
-          location: 'Bangkok'
-        },
-        {
-          date: new Date(2025, 5, 19),
-          type: 'planning',
-          time: 'All day',
-          title: 'Planning: Book flights to Chiang Mai',
-          location: 'Bangkok'
-        }
-      ]
+  // Filter trips based on selection and tags
+  const filteredTrips = useMemo(() => {
+    let filtered = trips;
+    
+    // Filter by selected trip
+    if (selectedTrip !== 'all') {
+      filtered = filtered.filter(trip => trip.id === selectedTrip);
     }
-  ];
+    
+    // Filter by selected tags
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(trip =>
+        selectedTags.some(tag => trip.tags.includes(tag))
+      );
+    }
+    
+    return filtered;
+  }, [trips, selectedTrip, selectedTags]);
 
-  const tags = ['Europe', 'Asia', 'Work'];
+  const toggleTag = (tag) => {
+    setSelectedTags(prev =>
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  // Count active gaps
+  const activeGapsCount = useMemo(() => {
+    return trips.reduce((count, trip) => {
+      return count + trip.events.filter(e => e.type === 'gap' && !e.dismissed).length;
+    }, 0);
+  }, [trips]);
   
   const bgColor = useColorModeValue('ios.secondaryBackground', 'gray.900');
   const navBg = useColorModeValue('white', 'gray.800');
@@ -210,7 +158,12 @@ const HomeScreen = () => {
           <Flex justify="space-between" align="center" mb={6}>
             <Heading size="lg">All Trips</Heading>
             <Flex gap={2}>
-              <Button leftIcon={<span>🏷️</span>} variant="outline" size="sm">
+              <Button
+                leftIcon={<span>🏷️</span>}
+                variant="outline"
+                size="sm"
+                onClick={onTagModalOpen}
+              >
                 Manage Tags
               </Button>
               <Button
@@ -234,13 +187,25 @@ const HomeScreen = () => {
               size="sm"
             >
               <option value="all">All Trips</option>
-              <option value="europe-2025">🇫🇷 Europe Summer 2025</option>
-              <option value="asia-2025">🇹🇭 Southeast Asia</option>
+              {trips.map(trip => (
+                <option key={trip.id} value={trip.id}>
+                  {trip.flag} {trip.name}
+                </option>
+              ))}
             </Select>
             <Flex gap={2} flexWrap="wrap">
-              {tags.map(tag => (
-                <Tag key={tag} size="md" colorScheme="blue" borderRadius="full">
-                  <TagLabel>🏷️ {tag}</TagLabel>
+              {availableTags.map(tag => (
+                <Tag
+                  key={tag.id}
+                  size="md"
+                  colorScheme={selectedTags.includes(tag.id) ? tag.color : 'gray'}
+                  borderRadius="full"
+                  cursor="pointer"
+                  onClick={() => toggleTag(tag.id)}
+                  variant={selectedTags.includes(tag.id) ? 'solid' : 'outline'}
+                >
+                  <TagLabel>{tag.emoji} {tag.name}</TagLabel>
+                  {selectedTags.includes(tag.id) && <TagCloseButton />}
                 </Tag>
               ))}
             </Flex>
@@ -254,7 +219,9 @@ const HomeScreen = () => {
               <Tab>
                 <Flex align="center" gap={2}>
                   🔔 Alerts
-                  <Badge colorScheme="red" borderRadius="full">3</Badge>
+                  {activeGapsCount > 0 && (
+                    <Badge colorScheme="red" borderRadius="full">{activeGapsCount}</Badge>
+                  )}
                 </Flex>
               </Tab>
             </TabList>
@@ -263,13 +230,13 @@ const HomeScreen = () => {
               <TabPanel px={0}>
                 <Box mt={4}>
                   <Calendar
-                    trips={trips}
+                    trips={filteredTrips}
                     selectedDate={selectedDate}
                     onDateSelect={setSelectedDate}
                   />
                   <Box mt={6}>
                     <TripDetails
-                      trips={trips}
+                      trips={filteredTrips}
                       selectedDate={selectedDate}
                     />
                   </Box>
@@ -278,7 +245,7 @@ const HomeScreen = () => {
 
               <TabPanel px={0}>
                 <Box mt={4}>
-                  <ListView trips={trips} />
+                  <ListView trips={filteredTrips} />
                 </Box>
               </TabPanel>
 
@@ -316,6 +283,9 @@ const HomeScreen = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {/* Tag Management Modal */}
+      <TagManagementModal isOpen={isTagModalOpen} onClose={onTagModalClose} />
 
       <Footer />
     </Flex>
