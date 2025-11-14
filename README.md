@@ -1,6 +1,6 @@
 # TravelPro
 
-An advanced travel planning application for experienced travelers, built with React and Material-UI.
+An advanced travel planning application for experienced travelers, built with React and Chakra UI with an iOS-inspired design system.
 
 ## Features
 
@@ -31,13 +31,21 @@ An advanced travel planning application for experienced travelers, built with Re
 - **Pre-Trip Preparation**: Visa requirements, travel tips, and money-saving suggestions
 - **Local Tips**: Practical information about transport, hours, and local customs
 
+### 🎨 Design Features
+- **iOS-Inspired Interface**: Clean, modern design with SF Pro fonts
+- **Dark Mode Support**: Full dark mode with proper contrast and readability
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Smooth Animations**: Polished transitions and interactions
+- **Accessibility**: WCAG-compliant with proper color contrast and keyboard navigation
+
 ## Tech Stack
 
-- **React** 19.2.0
-- **Material-UI (MUI)** - Google's Material Design
-- **React Router** - Navigation
-- **date-fns** - Date manipulation
-- **Cloudscape Design System** - AWS design components
+- **React** 19.2.0 - Modern React with hooks
+- **Chakra UI** 3.2.2 - Component library with iOS-inspired theming
+- **React Router** 7.0.2 - Client-side routing and navigation
+- **date-fns** 4.1.0 - Modern date manipulation and formatting
+- **Framer Motion** 11.15.0 - Smooth animations and transitions
+- **Emotion** - CSS-in-JS styling solution
 
 ## Getting Started
 
@@ -80,19 +88,28 @@ travelpro/
 │   └── index.html
 ├── src/
 │   ├── components/
-│   │   ├── HomeScreen.js          # Main dashboard
-│   │   ├── Calendar.js            # Calendar view component
-│   │   ├── ListView.js            # List view component
+│   │   ├── HomeScreen.js          # Main dashboard with tabs
+│   │   ├── Calendar.js            # Interactive calendar view
+│   │   ├── ListView.js            # Chronological list view
 │   │   ├── TripDetails.js         # Event details display
-│   │   ├── ImportPlans.js         # Import flow entry
-│   │   ├── ImportProcessing.js    # Document processing screen
-│   │   ├── ImportReview.js        # Review extracted data
 │   │   ├── AlertsView.js          # Alerts and notifications
-│   │   └── Recommendations.js     # Recommendations engine
+│   │   ├── ImportPlans.js         # Document import flow
+│   │   ├── ImportProcessing.js    # Processing screen
+│   │   ├── ImportReview.js        # Review extracted data
+│   │   ├── TripsOverview.js       # All trips management
+│   │   ├── GapDetail.js           # Gap analysis with suggestions
+│   │   ├── Recommendations.js     # Smart recommendations
+│   │   └── Footer.js              # Footer with dark mode toggle
+│   ├── theme/
+│   │   └── index.js               # Chakra UI theme configuration
 │   ├── styles/
-│   │   └── *.css                  # Component styles
-│   ├── App.js                     # Main app component
-│   └── index.js                   # Entry point
+│   │   └── *.css                  # Legacy component styles
+│   ├── App.js                     # Main app with routing
+│   └── index.js                   # Entry point with providers
+├── Assets/
+│   └── TRAVELPRO_WIREFRAMES-*.md  # Design documentation
+├── DESIGN.md                       # Design system documentation
+├── MIGRATION.md                    # Migration progress tracking
 ├── package.json
 └── README.md
 ```
@@ -119,35 +136,51 @@ travelpro/
 - Offers pre-trip preparation tips
 - Includes local insights and practical information
 
+## Current Status
+
+TravelPro is in active development with a fully functional UI and design system. The application currently features:
+- ✅ Complete iOS-inspired design system with Chakra UI
+- ✅ Full dark mode support across all components
+- ✅ Responsive design for mobile, tablet, and desktop
+- ✅ Interactive calendar and list views
+- ✅ Multi-trip management interface
+- ✅ Gap detection and alerts system
+- ✅ Document import flow UI
+- ✅ Recommendations interface
+
 ## Future Enhancements
 
 - Real AI/ML integration for document extraction
-- Integration with booking platforms
-- Collaborative trip planning
-- Offline mode support
-- Mobile app (React Native)
-- Weather integration
-- Budget tracking
-- Packing list generator
+- Backend API and database integration
+- Integration with booking platforms (Expedia, Booking.com, etc.)
+- Collaborative trip planning with shared access
+- Offline mode support with service workers
+- Native mobile app (React Native)
+- Real-time weather integration
+- Budget tracking and expense management
+- Packing list generator with smart suggestions
+- Flight price tracking and alerts
 
 ## Design System
 
-TravelPro follows a comprehensive design system focused on:
-- **Visual Hierarchy**: Unified multi-trip views with tag-based filtering
-- **Gap Detection**: Inline alerts, priority levels, and smart suggestions
-- **Tag System**: Flexible categorization by type, region, and purpose
-- **Accessibility**: High contrast, clear labels, dark mode support
-- **Progressive Disclosure**: Show essential info first, details on demand
+TravelPro uses a custom iOS-inspired design system built on Chakra UI:
 
-For detailed design documentation, see [DESIGN.md](DESIGN.md)
+### Theme Features
+- **SF Pro Font Family**: System fonts matching iOS design
+- **iOS Blue Color Palette**: Primary brand color (#007AFF) with semantic variants
+- **Rounded Corners**: 12px border radius for modern iOS feel
+- **Consistent Spacing**: 8px base unit for harmonious layouts
+- **Dark Mode**: Complete dark mode support with proper contrast ratios
 
-## Key Design Principles
-
+### Design Principles
 1. **Unified Multi-Trip Organization**: Single view for all trips with smart filtering
 2. **Enhanced Gap Detection**: Visual timeline with priority-based alerts
 3. **Tag-Based Filtering**: Organize trips by multiple dimensions
 4. **Context-Aware Recommendations**: Smart suggestions based on location and interests
-5. **Accessible Design**: Built for everyone with WCAG compliance in mind
+5. **Accessible Design**: WCAG-compliant with proper color contrast and keyboard navigation
+6. **Progressive Disclosure**: Show essential info first, details on demand
+
+For detailed design documentation, see [DESIGN.md](DESIGN.md)
 
 ## Contributing
 
