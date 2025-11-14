@@ -217,20 +217,12 @@ const TripsOverview = () => {
           <Heading size="md" fontWeight="600">TravelPro</Heading>
 
           <Flex gap={2}>
-            <IconButton icon={<SearchIcon />} variant="ghost" aria-label="Search" />
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<span>👤</span>}
-                variant="ghost"
-                aria-label="User menu"
-              />
-              <MenuList>
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem>Sign out</MenuItem>
-              </MenuList>
-            </Menu>
+            <IconButton
+              icon={<SearchIcon />}
+              variant="ghost"
+              aria-label="Search"
+              onClick={() => navigate('/')}
+            />
           </Flex>
         </Flex>
       </Box>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { format } from 'date-fns';
 import {
   Box,
   Container,
@@ -28,6 +29,12 @@ import {
   ModalCloseButton,
   useDisclosure,
   useColorModeValue,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  VStack,
+  Text,
+  Divider,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -49,12 +56,14 @@ const HomeScreen = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isTagModalOpen, onOpen: onTagModalOpen, onClose: onTagModalClose } = useDisclosure();
+  const { isOpen: isSearchOpen, onOpen: onSearchOpen, onClose: onSearchClose } = useDisclosure();
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 5, 15));
   const [selectedTrip, setSelectedTrip] = useState('all');
   const [selectedTags, setSelectedTags] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   
-  const { trips, availableTags } = useTripContext();
+  const { trips, availableTags, getTagById } = useTripContext();
 
   // Filter trips based on selection and tags
   const filteredTrips = useMemo(() => {
@@ -89,6 +98,43 @@ const HomeScreen = () => {
       return count + trip.events.filter(e => e.type === 'gap' && !e.dismissed).length;
     }, 0);
   }, [trips]);
+
+  // Search functionality
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    
+    const query = searchQuery.toLowerCase();
+    const results = [];
+    
+    trips.forEach(trip => {
+      // Search in trip name
+      if (trip.name.toLowerCase().includes(query)) {
+        results.push({
+          type: 'trip',
+          item: trip,
+          match: trip.name
+        });
+      }
+      
+      // Search in events
+      trip.events.forEach(event => {
+        if (
+          event.title?.toLowerCase().includes(query) ||
+          event.location?.toLowerCase().includes(query) ||
+          event.confirmation?.toLowerCase().includes(query)
+        ) {
+          results.push({
+            type: 'event',
+            item: event,
+            trip: trip,
+            match: event.title
+          });
+        }
+      });
+    });
+    
+    return results.slice(0, 20); // Limit to 20 results
+  }, [searchQuery, trips]);
   
   const bgColor = useColorModeValue('ios.secondaryBackground', 'gray.900');
   const navBg = useColorModeValue('white', 'gray.800');
@@ -127,26 +173,31 @@ const HomeScreen = () => {
           <Heading size="md" fontWeight="600">TravelPro</Heading>
 
           <Flex gap={2}>
-            <IconButton
-              icon={<BellIcon />}
-              variant="ghost"
-              aria-label="Notifications"
-              position="relative"
-            >
-              <Badge
-                colorScheme="red"
-                position="absolute"
-                top="0"
-                right="0"
-                fontSize="xs"
-              >
-                3
-              </Badge>
-            </IconButton>
+            <Box position="relative">
+              <IconButton
+                icon={<BellIcon />}
+                variant="ghost"
+                aria-label="Notifications"
+                onClick={() => setActiveTab(2)}
+              />
+              {activeGapsCount > 0 && (
+                <Badge
+                  colorScheme="red"
+                  position="absolute"
+                  top="0"
+                  right="0"
+                  fontSize="xs"
+                  borderRadius="full"
+                >
+                  {activeGapsCount}
+                </Badge>
+              )}
+            </Box>
             <IconButton
               icon={<SearchIcon />}
               variant="ghost"
               aria-label="Search"
+              onClick={onSearchOpen}
             />
           </Flex>
         </Flex>
@@ -286,6 +337,98 @@ const HomeScreen = () => {
 
       {/* Tag Management Modal */}
       <TagManagementModal isOpen={isTagModalOpen} onClose={onTagModalClose} />
+
+      {/* Search Modal */}
+      <Modal isOpen={isSearchOpen} onClose={onSearchClose} size="xl">
+        <ModalOverlay />
+        <ModalContent borderRadius="lg">
+          <ModalHeader>Search</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <InputGroup mb={4}>
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.400" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search trips, events, locations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+              />
+            </InputGroup>
+
+            {searchQuery.trim() && (
+              <VStack spacing={2} align="stretch" maxH="400px" overflowY="auto">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result, idx) => (
+                    <Box
+                      key={idx}
+                      p={3}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      cursor="pointer"
+                      _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
+                      onClick={() => {
+                        if (result.type === 'event') {
+                          setSelectedDate(result.item.date);
+                          setActiveTab(0);
+                        }
+                        onSearchClose();
+                        setSearchQuery('');
+                      }}
+                    >
+                      {result.type === 'trip' ? (
+                        <Flex align="center" gap={2}>
+                          <Text fontSize="lg">{result.item.flag}</Text>
+                          <Box>
+                            <Text fontWeight="600">{result.item.name}</Text>
+                            <Text fontSize="sm" color="gray.600">
+                              Trip • {result.item.events.length} events
+                            </Text>
+                          </Box>
+                        </Flex>
+                      ) : (
+                        <Flex align="center" gap={2}>
+                          <Text fontSize="lg">
+                            {result.item.type === 'flight' ? '✈️' :
+                             result.item.type === 'hotel' ? '🏨' :
+                             result.item.type === 'activity' ? '🎫' :
+                             result.item.type === 'dining' ? '🍽️' : '📋'}
+                          </Text>
+                          <Box flex="1">
+                            <Text fontWeight="600">{result.item.title}</Text>
+                            <Text fontSize="sm" color="gray.600">
+                              {result.trip.flag} {result.trip.name} • {format(result.item.date, 'MMM d, yyyy')}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      )}
+                    </Box>
+                  ))
+                ) : (
+                  <Text color="gray.500" textAlign="center" py={8}>
+                    No results found for "{searchQuery}"
+                  </Text>
+                )}
+              </VStack>
+            )}
+
+            {!searchQuery.trim() && (
+              <Box py={8} textAlign="center">
+                <Text color="gray.500" mb={4}>
+                  Search for trips, events, locations, or confirmation numbers
+                </Text>
+                <VStack spacing={2} align="stretch">
+                  <Text fontSize="sm" fontWeight="600" color="gray.600">Quick tips:</Text>
+                  <Text fontSize="sm" color="gray.500">• Search by trip name: "Europe"</Text>
+                  <Text fontSize="sm" color="gray.500">• Search by location: "Paris"</Text>
+                  <Text fontSize="sm" color="gray.500">• Search by confirmation: "ABC123"</Text>
+                </VStack>
+              </Box>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
       <Footer />
     </Flex>

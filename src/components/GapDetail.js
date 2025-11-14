@@ -116,19 +116,7 @@ const GapDetail = () => {
             aria-label="Back"
           />
           <Heading size="md" fontWeight="600">Gap Details</Heading>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              icon={<span>👤</span>}
-              variant="ghost"
-              aria-label="User menu"
-            />
-            <MenuList>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Sign out</MenuItem>
-            </MenuList>
-          </Menu>
+          <Box w="40px" /> {/* Spacer for alignment */}
         </Flex>
       </Box>
 

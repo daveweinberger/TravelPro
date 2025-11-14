@@ -35,22 +35,34 @@ const components = {
       borderRadius: '10px',
     },
     variants: {
-      solid: {
-        bg: 'brand.500',
+      solid: (props) => ({
+        bg: props.colorMode === 'dark' ? 'brand.600' : 'brand.500',
         color: 'white',
         _hover: {
-          bg: 'brand.600',
+          bg: props.colorMode === 'dark' ? 'brand.500' : 'brand.600',
           transform: 'scale(0.98)',
         },
         _active: {
-          bg: 'brand.700',
+          bg: props.colorMode === 'dark' ? 'brand.400' : 'brand.700',
         },
-      },
-      ghost: {
+      }),
+      ghost: (props) => ({
+        color: props.colorMode === 'dark' ? 'gray.200' : 'gray.700',
         _hover: {
-          bg: 'ios.lightGray',
+          bg: props.colorMode === 'dark' ? 'whiteAlpha.200' : 'blackAlpha.100',
         },
-      },
+        _active: {
+          bg: props.colorMode === 'dark' ? 'whiteAlpha.300' : 'blackAlpha.200',
+        },
+      }),
+      outline: (props) => ({
+        borderColor: props.colorMode === 'dark' ? 'gray.600' : 'gray.300',
+        color: props.colorMode === 'dark' ? 'gray.200' : 'gray.700',
+        _hover: {
+          bg: props.colorMode === 'dark' ? 'whiteAlpha.100' : 'blackAlpha.50',
+          borderColor: props.colorMode === 'dark' ? 'gray.500' : 'gray.400',
+        },
+      }),
     },
     defaultProps: {
       size: 'md',
@@ -93,10 +105,26 @@ const components = {
     },
   },
   Alert: {
-    baseStyle: {
+    baseStyle: (props) => ({
       container: {
         borderRadius: '10px',
+        bg: props.colorMode === 'dark' 
+          ? props.status === 'warning' ? 'orange.900' : 'gray.800'
+          : undefined,
       },
+    }),
+    variants: {
+      subtle: (props) => ({
+        container: {
+          bg: props.colorMode === 'dark'
+            ? props.status === 'warning' ? 'orange.900'
+            : props.status === 'error' ? 'red.900'
+            : props.status === 'success' ? 'green.900'
+            : props.status === 'info' ? 'blue.900'
+            : 'gray.800'
+            : undefined,
+        },
+      }),
     },
   },
 };
@@ -138,6 +166,10 @@ const theme = extendTheme({
       body: {
         bg: props.colorMode === 'dark' ? 'gray.900' : 'ios.secondaryBackground',
         color: props.colorMode === 'dark' ? 'gray.100' : 'gray.800',
+        transition: 'background-color 0.3s ease-in-out, color 0.3s ease-in-out',
+      },
+      '*': {
+        transition: 'background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out',
       },
     }),
   },

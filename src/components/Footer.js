@@ -41,6 +41,17 @@ const Footer = () => {
               variant="ghost"
               aria-label="Toggle dark mode"
               size="sm"
+              _hover={{
+                transform: 'translateY(-2px)',
+              }}
+              sx={{
+                '& svg': {
+                  transition: 'all 0.3s ease-in-out',
+                },
+                '&:active': {
+                  transform: 'scale(0.9) rotate(180deg)',
+                },
+              }}
             />
           </Flex>
         </Flex>
